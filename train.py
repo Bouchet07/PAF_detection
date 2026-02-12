@@ -1,14 +1,12 @@
 from data_manager import get_loaders
-from model import ECGClassifier
+from model import PAFClassifier
 import torch
 
 def train():
-    # Setup
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-    # Get the loader via our factory function
     train_loader = get_loaders()
-    model = ECGClassifier().to(device)
+    model = PAFClassifier().to(device)
     
     # Dummy Training Loop
     print(f"Training starting on {device}...")
