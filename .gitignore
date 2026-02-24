@@ -212,4 +212,4 @@ result*/
 
 *.ipynb
 _*
-
+results/
