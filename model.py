@@ -20,10 +20,10 @@ class ResidualBlock(nn.Module):
             )
 
     def forward(self, x):
-        out = nn.ReLU()(self.bn1(self.conv1(x)))
+        out = torch.relu(self.bn1(self.conv1(x)))
         out = self.bn2(self.conv2(out))
         out += self.shortcut(x) # The "Skip Connection"
-        return nn.ReLU()(out)
+        return torch.relu(out)
 
 class PAFClassifier(nn.Module):
     def __init__(self, in_channels=2, num_classes=2):

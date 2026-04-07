@@ -7,34 +7,31 @@ import torch.optim as optim
 def train():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-    train_loader = get_loaders()
+    train_loader, val_loader = get_loaders()
     model = PAFClassifier().to(device)
     
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     
-    num_epochs = 5
+    num_epochs = 50
     
-    model.train() # Set model to training mode
     print(f"Training starting on {device}...")
     
     for epoch in range(num_epochs):
+        model.train() 
         running_loss = 0.0
         correct = 0
         total = 0
         
         for batch_idx, (signals, labels) in enumerate(train_loader):
-            # Move data to GPU/CPU
             signals, labels = signals.to(device), labels.to(device)
             
-            # --- The Core Training Steps ---
-            optimizer.zero_grad()               # Clear previous gradients
-            outputs = model(signals)            # Forward pass
-            loss = criterion(outputs, labels)   # Calculate loss
-            loss.backward()                     # Backward pass (compute gradients)
-            optimizer.step()                    # Update weights
+            optimizer.zero_grad()               
+            outputs = model(signals)            
+            loss = criterion(outputs, labels)   
+            loss.backward()                     
+            optimizer.step()                    
             
-            # Statistics
             running_loss += loss.item()
             _, predicted = outputs.max(1)
             total += labels.size(0)
@@ -44,7 +41,19 @@ def train():
                 print(f"Epoch [{epoch+1}/{num_epochs}] Batch [{batch_idx}/{len(train_loader)}] "
                       f"Loss: {loss.item():.4f} | Acc: {100.*correct/total:.2f}%")
 
-        print(f"Epoch {epoch+1} complete. Average Loss: {running_loss/len(train_loader):.4f}")
+        # Validation Step
+        model.eval()
+        val_correct = 0
+        val_total = 0
+        with torch.no_grad():
+            for signals, labels in val_loader:
+                signals, labels = signals.to(device), labels.to(device)
+                outputs = model(signals)
+                _, predicted = outputs.max(1)
+                val_total += labels.size(0)
+                val_correct += predicted.eq(labels).sum().item()
+        
+        print(f"Epoch {epoch+1} complete. Avg Loss: {running_loss/len(train_loader):.4f} | Val Acc: {100.*val_correct/val_total:.2f}%")
 
     # Save the trained model
     torch.save(model.state_dict(), "paf_resnet.pth")

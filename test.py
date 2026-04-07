@@ -2,14 +2,16 @@ import torch
 import os
 import numpy as np
 import wfdb
-from model import PAFClassifier # Assuming your model is in model.py
+from model import PAFClassifier
 from data_manager import get_loaders
 
+import matplotlib
+matplotlib.use('Agg') # Headless support
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, classification_report
 
-def load_test_record(data_dir, record_name, window_seconds=30, fs=128):
+def load_test_record(data_dir, record_name, window_seconds=30, target_fs=128, target_channels=2):
     """Loads a single record and returns a tensor of the first 30 seconds."""
     record_path = os.path.join(data_dir, record_name)
     record = wfdb.rdrecord(record_path)
@@ -17,8 +19,20 @@ def load_test_record(data_dir, record_name, window_seconds=30, fs=128):
     # Get the signal (Channels, Samples)
     signal = record.p_signal.astype(np.float32).T 
     
+    # Handle Channel Consistency
+    if signal.shape[0] < target_channels:
+        padding = np.zeros((target_channels - signal.shape[0], signal.shape[1]), dtype=np.float32)
+        signal = np.vstack([signal, padding])
+    elif signal.shape[0] > target_channels:
+        signal = signal[:target_channels, :]
+
+    # Handle Sampling Rate (Basic check)
+    if record.fs != target_fs:
+        # Resampling should ideally happen here
+        pass
+
     # We take the first 'window_samples' to keep it consistent
-    window_samples = window_seconds * fs
+    window_samples = window_seconds * target_fs
     if signal.shape[1] < window_samples:
         # Pad if the signal is somehow too short
         padding = window_samples - signal.shape[1]
@@ -28,23 +42,30 @@ def load_test_record(data_dir, record_name, window_seconds=30, fs=128):
         
     return torch.tensor(signal, dtype=torch.float32).unsqueeze(0) # Add batch dim
 
-def run_test(data_path='data/paf-prediction-challenge-database/', model_path='paf_resnet.pth'):
+def run_challenge_test(data_path='data/paf-prediction-challenge-database/', model_path='paf_resnet.pth'):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # 1. Initialize Model and Load Weights
     model = PAFClassifier(in_channels=2, num_classes=2).to(device)
+    if not os.path.exists(model_path):
+        print(f"Model file {model_path} not found. Train the model first.")
+        return
     model.load_state_dict(torch.load(model_path, map_location=device))
-    model.eval() # CRITICAL: Set to evaluation mode (turns off Dropout/BatchNorm)
+    model.eval() 
 
     # 2. Identify Test Records (t01, t02, etc.)
     all_files = os.listdir(data_path)
     test_records = sorted(list(set([f.replace('.hea', '') for f in all_files if f.startswith('t') and f.endswith('.hea')])))
 
+    if not test_records:
+        print("No 't' records found for challenge inference.")
+        return
+
     print(f"Found {len(test_records)} test records. Starting inference...")
 
     results = {}
 
-    with torch.no_grad(): # Disable gradient calculation for speed and memory
+    with torch.no_grad(): 
         for name in test_records:
             try:
                 # Load and move to device
@@ -72,23 +93,24 @@ def run_test(data_path='data/paf-prediction-challenge-database/', model_path='pa
         r1, r2 = test_records[i-1], test_records[i]
         print(f"Pair {r1}/{r2}: Prediction -> {results.get(r1)} / {results.get(r2)}")
 
-def evaluate_model(model_path='paf_resnet.pth', batch_size=32):
+def evaluate_on_val_set(model_path='paf_resnet.pth', batch_size=32):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-    # 1. Load Data
-    # Note: In a real scenario, you'd pass a specific 'val_records' list here
-    # to ensure you aren't evaluating on data the model already saw.
-    val_loader = get_loaders(batch_size=batch_size) 
+    # 1. Load Data (Validation Split)
+    _, val_loader = get_loaders(batch_size=batch_size) 
     
     # 2. Load Model
     model = PAFClassifier(in_channels=2, num_classes=2).to(device)
+    if not os.path.exists(model_path):
+        print(f"Model file {model_path} not found. Train the model first.")
+        return
     model.load_state_dict(torch.load(model_path, map_location=device))
     model.eval()
 
     all_preds = []
     all_labels = []
 
-    print("Running evaluation...")
+    print("Running evaluation on validation set...")
     with torch.no_grad():
         for signals, labels in val_loader:
             signals = signals.to(device)
@@ -114,7 +136,11 @@ def evaluate_model(model_path='paf_resnet.pth', batch_size=32):
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
     plt.title('Confusion Matrix: PAF Prediction')
-    plt.show()
+    
+    os.makedirs('results', exist_ok=True)
+    plt.savefig('results/confusion_matrix.png')
+    print("Confusion matrix saved to results/confusion_matrix.png")
 
 if __name__ == "__main__":
-    evaluate_model()
+    evaluate_on_val_set()
+    run_challenge_test()
