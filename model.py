@@ -29,18 +29,21 @@ class PAFClassifier(nn.Module):
     def __init__(self, in_channels=2, num_classes=2):
         super(PAFClassifier, self).__init__()
         
+        # Reduced from 64 down to 16 channels
         self.prep = nn.Sequential(
-            nn.Conv1d(in_channels, 64, kernel_size=15, stride=2, padding=7),
-            nn.BatchNorm1d(64),
+            nn.Conv1d(in_channels, 16, kernel_size=15, stride=2, padding=7),
+            nn.BatchNorm1d(16),
             nn.ReLU()
         )
         
-        self.layer1 = ResidualBlock(64, 64)
-        self.layer2 = ResidualBlock(64, 128, stride=2) # Downsample
+        self.layer1 = ResidualBlock(16, 16)
+        self.layer2 = ResidualBlock(16, 32, stride=2) # Downsample
         
         self.avgpool = nn.AdaptiveAvgPool1d(1)
         
-        self.classifier = nn.Linear(128, num_classes)
+        self.dropout = nn.Dropout(p=0.5)
+        
+        self.classifier = nn.Linear(32, num_classes)
 
     def forward(self, x):
         x = self.prep(x)
@@ -49,6 +52,8 @@ class PAFClassifier(nn.Module):
         x = self.avgpool(x)
         
         x = torch.flatten(x, 1) 
+        
+        x = self.dropout(x)
         
         logits = self.classifier(x)
         return logits
