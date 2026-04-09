@@ -2,6 +2,7 @@ import torch
 import os
 import numpy as np
 import wfdb
+import scipy.signal
 from model import PAFClassifier
 from data_manager import get_loaders
 
@@ -12,40 +13,47 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix, classification_report
 
 def load_test_record(data_dir, record_name, window_seconds=30, target_fs=128, target_channels=2):
-    """Loads a single record and returns a tensor of the first 30 seconds."""
+    """Loads a single record, resamples, normalizes, and returns the LAST 30 seconds."""
     record_path = os.path.join(data_dir, record_name)
     record = wfdb.rdrecord(record_path)
     
     # Get the signal (Channels, Samples)
     signal = record.p_signal.astype(np.float32).T 
     
-    # Handle Channel Consistency
+    # 1. Handle Sampling Rate (Dynamic Resampling)
+    if record.fs != target_fs:
+        num_samples = int(signal.shape[1] * (target_fs / record.fs))
+        signal = scipy.signal.resample(signal, num_samples, axis=1)
+
+    # 2. Handle Channel Consistency
     if signal.shape[0] < target_channels:
         padding = np.zeros((target_channels - signal.shape[0], signal.shape[1]), dtype=np.float32)
         signal = np.vstack([signal, padding])
     elif signal.shape[0] > target_channels:
         signal = signal[:target_channels, :]
 
-    # Handle Sampling Rate (Basic check)
-    if record.fs != target_fs:
-        # Resampling should ideally happen here
-        pass
-
-    # We take the first 'window_samples' to keep it consistent
+    # 3. Slice the LAST window_samples (Best for predicting upcoming events)
     window_samples = window_seconds * target_fs
     if signal.shape[1] < window_samples:
         # Pad if the signal is somehow too short
         padding = window_samples - signal.shape[1]
         signal = np.pad(signal, ((0,0), (0, padding)), 'constant')
     else:
-        signal = signal[:, :window_samples]
+        # Grab the end of the recording
+        start_idx = signal.shape[1] - window_samples
+        signal = signal[:, start_idx:]
+        
+    # 4. Z-Score Normalization (MANDATORY for inference to match training)
+    mean = np.mean(signal, axis=1, keepdims=True)
+    std = np.std(signal, axis=1, keepdims=True)
+    signal = (signal - mean) / (std + 1e-8)
         
     return torch.tensor(signal, dtype=torch.float32).unsqueeze(0) # Add batch dim
 
-def run_challenge_test(data_path='data/paf-prediction-challenge-database/', model_path='paf_resnet.pth'):
+def run_challenge_test(data_path='data/paf-prediction-challenge-database/', model_path='paf_resnet_best.pth'):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # 1. Initialize Model and Load Weights
+    # Initialize Model and Load Weights
     model = PAFClassifier(in_channels=2, num_classes=2).to(device)
     if not os.path.exists(model_path):
         print(f"Model file {model_path} not found. Train the model first.")
@@ -53,7 +61,7 @@ def run_challenge_test(data_path='data/paf-prediction-challenge-database/', mode
     model.load_state_dict(torch.load(model_path, map_location=device))
     model.eval() 
 
-    # 2. Identify Test Records (t01, t02, etc.)
+    # Identify Test Records (t01, t02, etc.)
     all_files = os.listdir(data_path)
     test_records = sorted(list(set([f.replace('.hea', '') for f in all_files if f.startswith('t') and f.endswith('.hea')])))
 
@@ -62,19 +70,15 @@ def run_challenge_test(data_path='data/paf-prediction-challenge-database/', mode
         return
 
     print(f"Found {len(test_records)} test records. Starting inference...")
-
     results = {}
 
     with torch.no_grad(): 
         for name in test_records:
             try:
-                # Load and move to device
                 input_tensor = load_test_record(data_path, name).to(device)
                 
-                # Forward Pass
                 output = model(input_tensor)
                 
-                # Get Prediction (0 = Normal/Distant, 1 = Pre-PAF)
                 _, predicted = torch.max(output, 1)
                 prob = torch.softmax(output, dim=1)
                 
@@ -87,19 +91,18 @@ def run_challenge_test(data_path='data/paf-prediction-challenge-database/', mode
             except Exception as e:
                 print(f"Error processing {name}: {e}")
 
-    # 3. Group by Pairs (t01/t02, t03/t04) as per Challenge rules
     print("\n--- Challenge Summary (Pairs) ---")
     for i in range(1, len(test_records), 2):
-        r1, r2 = test_records[i-1], test_records[i]
-        print(f"Pair {r1}/{r2}: Prediction -> {results.get(r1)} / {results.get(r2)}")
+        if i < len(test_records):
+            r1, r2 = test_records[i-1], test_records[i]
+            print(f"Pair {r1}/{r2}: Prediction -> {results.get(r1)} / {results.get(r2)}")
 
-def evaluate_on_val_set(model_path='paf_resnet.pth', batch_size=32):
+# Changed default path to 'paf_resnet_best.pth'
+def evaluate_on_val_set(model_path='paf_resnet_best.pth', batch_size=32):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-    # 1. Load Data (Validation Split)
     _, val_loader = get_loaders(batch_size=batch_size) 
     
-    # 2. Load Model
     model = PAFClassifier(in_channels=2, num_classes=2).to(device)
     if not os.path.exists(model_path):
         print(f"Model file {model_path} not found. Train the model first.")
@@ -121,14 +124,12 @@ def evaluate_on_val_set(model_path='paf_resnet.pth', batch_size=32):
             all_preds.extend(preds.cpu().numpy())
             all_labels.extend(labels.numpy())
 
-    # 3. Scikit-Learn Metrics
     print("\n" + "="*30)
     print("CLASSIFICATION REPORT")
     print("="*30)
     target_names = ['Normal/Distant (0)', 'Pre-PAF (1)']
     print(classification_report(all_labels, all_preds, target_names=target_names))
 
-    # 4. Confusion Matrix Visualization
     cm = confusion_matrix(all_labels, all_preds)
     plt.figure(figsize=(8, 6))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
