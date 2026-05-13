@@ -7,7 +7,6 @@ import random
 import re
 
 class PAFDataset(Dataset):
-    # ADDED 'mode' to __init__
     def __init__(self, data_dir, record_names, window_seconds=30, target_fs=128, target_channels=2, mode='train'):
         self.window_samples = window_seconds * target_fs
         self.record_names = record_names
@@ -58,7 +57,6 @@ class PAFDataset(Dataset):
             if self.mode == 'train':
                 start = random.randint(0, max_start)
             else:
-                # Always grab the exact middle of the signal for validation
                 start = max_start // 2 
                 
             end = start + self.window_samples
@@ -68,7 +66,6 @@ class PAFDataset(Dataset):
             windowed_signal = np.pad(full_signal, ((0,0), (0, padding)), 'constant')
 
         # Z-Score Normalization per channel
-        # Add 1e-8 to avoid dividing by zero if a signal is totally flat
         mean = np.mean(windowed_signal, axis=1, keepdims=True)
         std = np.std(windowed_signal, axis=1, keepdims=True)
         windowed_signal = (windowed_signal - mean) / (std + 1e-8)

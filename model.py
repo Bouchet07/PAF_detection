@@ -29,7 +29,6 @@ class PAFClassifier(nn.Module):
     def __init__(self, in_channels=2, num_classes=2):
         super(PAFClassifier, self).__init__()
         
-        # Reduced from 64 down to 16 channels
         self.prep = nn.Sequential(
             nn.Conv1d(in_channels, 16, kernel_size=15, stride=2, padding=7),
             nn.BatchNorm1d(16),

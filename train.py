@@ -83,7 +83,6 @@ def train():
         history['val_loss'].append(epoch_val_loss)
         history['val_acc'].append(epoch_val_acc)
         
-        # Print clearly formatted row
         print(f"[{epoch+1:02d}/{num_epochs:02d}]    | "
               f"{epoch_train_loss:.4f}       | "
               f"{epoch_val_loss:.4f}     | "
