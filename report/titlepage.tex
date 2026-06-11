@@ -1,0 +1,57 @@
+% ============================================================
+% PORTADA OFICIAL (UNIVERSIDAD DE ZARAGOZA)
+% ============================================================
+% Modifica los textos de esta portada según tus datos
+
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+
+% Geometría específica para la portada según directrices
+\newgeometry{top=3.24cm, left=2.81cm, right=2.81cm, bottom=2cm}
+
+% Logo de la Universidad
+\includegraphics[height=2.4cm]{img/logo_uz.png}\\[1.41cm]
+
+% Caja superior con el tipo de trabajo (e.g., Trabajo Fin de Grado / Trabajo Fin de Máster)
+\setlength{\fboxrule}{0.96pt}
+\setlength{\fboxsep}{4pt}
+\fcolorbox{tfgblue}{white}{%
+  \parbox{423.94pt}{\centering\fontsize{28.18}{34}\selectfont
+    \vspace{6pt}Trabajo Fin de Grado\vspace{0pt} % Cambiar por Trabajo Fin de Máster si procede
+  }%
+}\\[2cm]
+
+% Título del trabajo
+\fontsize{19.99}{24}\selectfont
+Predicción de fibrilación auricular paroxística a partir del electrocardiograma en ritmo sinusal mediante el análisis con redes neuronales profundas \\[0.86cm] % Título en español
+{\itshape Prediction of Paroxysmal Atrial Fibrillation from the Sinus Rhythm Electrocardiogram Using Deep Neural Networks}\\[1.76cm] % Título en inglés
+
+% Autor
+\fontsize{12.04}{14.5}\selectfont
+Autor\\[0.63cm]
+\fontsize{18.07}{22}\selectfont
+Diego Bouchet Agudo\\[1.66cm]
+
+% Director/es
+\fontsize{12.04}{14.5}\selectfont
+Directores\\[0.58cm]
+\fontsize{13.97}{17}\selectfont
+Juan Pablo artínez Cortés y Antonio Miguel Artiaga\\[0.78cm]
+
+% Titulación
+\fontsize{12.04}{14.5}\selectfont
+Titulación\\[0.49cm]
+\fontsize{13.97}{17}\selectfont
+Grado en Ingeniería de Tecnologías y Servicios de Telecomunicación\\[0.78cm] % Cambiar por tu grado o máster
+
+% Escuela / Facultad y Año
+\fontsize{12.04}{14.5}\selectfont
+Escuela de Ingeniería y Arquitectura (EINA)\\[0.4cm] % Cambiar por tu centro
+\number\year % Genera automáticamente el año actual
+
+\vfill
+
+% Restaurar márgenes normales para el resto de páginas del documento
+\restoregeometry
+\end{titlepage}

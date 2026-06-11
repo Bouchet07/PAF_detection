@@ -1,0 +1,17 @@
+# Configuración de latexmk para compilación con biber
+# Uso: latexmk -pdf ejemplo.tex
+
+# Motor PDF por defecto
+$pdf_mode = 1;
+
+# Usar pdflatex
+$pdflatex = 'pdflatex -interaction=nonstopmode -synctex=1 %O %S';
+
+# Usar biber para bibliografía (en lugar de bibtex)
+$biber = 'biber %O %S';
+
+# Número máximo de intentos de compilación
+$max_repeat = 5;
+
+# Limpiar archivos auxiliares después de compilar
+$clean_ext = 'synctex.gz synctex.gz(busy) run.xml tex.bak bbl bcf fdb_latexmk run tdo %R-blx.bib';

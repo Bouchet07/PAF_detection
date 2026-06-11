@@ -134,3 +134,122 @@ def get_loaders(
     return train_loader, val_loader, test_loader
 
 
+def get_kfold_loaders(
+    metadata_path: str = 'metadata.csv', 
+    data_dir: str = 'processed_data', 
+    batch_size: int = 32, 
+    window_seconds: int = 30, 
+    k_fold: int = 5,
+    train_ratio: float = 0.7,
+    val_ratio: float = 0.15,
+    seed: int = 42,
+    in_memory: bool = True,
+    augment: bool = False,
+    use_sampler: bool = False
+) -> Tuple[list, DataLoader, list]:
+    """
+    Splits cv_subjects into k disjoint Group Folds and returns a list of (train_loader, val_loader)
+    for each fold, along with a consistent hidden test loader.
+    """
+    if not os.path.exists(metadata_path):
+        raise FileNotFoundError(f"Metadata file not found at {metadata_path}")
+        
+    df = pd.read_csv(metadata_path)
+    
+    # Extract unique subjects
+    subjects = df['subject'].unique()
+    
+    # Shuffle subjects deterministically
+    random.seed(seed)
+    subjects_list = list(subjects)
+    random.shuffle(subjects_list)
+    
+    # Split test set (same test set as before to keep a consistent holdout)
+    total_subjects = len(subjects_list)
+    split_idx = int(total_subjects * (train_ratio + val_ratio))
+    cv_subjects = subjects_list[:split_idx]
+    test_subjects = subjects_list[split_idx:]
+    
+    test_df = df[df['subject'].isin(test_subjects)].reset_index(drop=True)
+    
+    # Group K-Fold on cv_subjects
+    from sklearn.model_selection import KFold
+    kf = KFold(n_splits=k_fold, shuffle=True, random_state=seed)
+    
+    folds_loaders = []
+    
+    for fold, (train_subj_idx, val_subj_idx) in enumerate(kf.split(cv_subjects)):
+        fold_train_subjs = set([cv_subjects[i] for i in train_subj_idx])
+        fold_val_subjs = set([cv_subjects[i] for i in val_subj_idx])
+        
+        train_df = df[df['subject'].isin(fold_train_subjs)].reset_index(drop=True)
+        val_df = df[df['subject'].isin(fold_val_subjs)].reset_index(drop=True)
+        
+        # Instantiate Datasets
+        train_dataset = PAFDataset(
+            metadata=train_df, 
+            data_dir=data_dir, 
+            window_seconds=window_seconds, 
+            mode='train', 
+            in_memory=in_memory,
+            augment=augment
+        )
+        
+        hrv_mean = train_dataset.hrv_mean
+        hrv_std = train_dataset.hrv_std
+        
+        val_dataset = PAFDataset(
+            metadata=val_df, 
+            data_dir=data_dir, 
+            window_seconds=window_seconds, 
+            mode='val', 
+            in_memory=in_memory,
+            hrv_mean=hrv_mean,
+            hrv_std=hrv_std
+        )
+        
+        # Build DataLoaders
+        if use_sampler:
+            import numpy as np
+            import torch
+            train_labels = train_df['label'].values
+            class_counts = np.bincount(train_labels)
+            class_weights = 1.0 / (class_counts + 1e-8)
+            sample_weights = class_weights[train_labels]
+            sampler = torch.utils.data.WeightedRandomSampler(
+                weights=sample_weights,
+                num_samples=len(sample_weights),
+                replacement=True
+            )
+            train_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=sampler, drop_last=False)
+        else:
+            train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=False)
+            
+        val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
+        
+        folds_loaders.append((train_loader, val_loader))
+        
+    # Baseline for test set normalization (same as standard loaders)
+    cv_df = df[df['subject'].isin(cv_subjects)].reset_index(drop=True)
+    baseline_train = PAFDataset(
+        metadata=cv_df, 
+        data_dir=data_dir, 
+        window_seconds=window_seconds, 
+        mode='train', 
+        in_memory=False
+    )
+    test_dataset = PAFDataset(
+        metadata=test_df,
+        data_dir=data_dir,
+        window_seconds=window_seconds,
+        mode='val',
+        in_memory=in_memory,
+        hrv_mean=baseline_train.hrv_mean,
+        hrv_std=baseline_train.hrv_std
+    )
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
+    
+    return folds_loaders, test_loader, test_subjects
+
+
+

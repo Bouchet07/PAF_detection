@@ -1,0 +1,226 @@
+% ============================================================
+% TRABAJO FIN DE GRADO / MÁSTER - UNIVERSIDAD DE ZARAGOZA
+% ============================================================
+% Documento principal (main.tex)
+% Compilar con: latexmk -pdf main.tex
+
+\documentclass[a4paper,11pt]{report}
+
+% === PAQUETES BÁSICOS ===
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,english]{babel}
+\usepackage{csquotes}
+
+% === TIPOGRAFÍA ===
+\usepackage{carlito}
+\usepackage{anyfontsize}
+\renewcommand{\familydefault}{\sfdefault} % Fuente sans-serif oficial UZ (Calibri/Carlito)
+
+% === GEOMETRÍA Y MÁRGENES ===
+\usepackage{geometry}
+\geometry{
+  a4paper,
+  left=2.5cm,
+  right=2.5cm,
+  top=3cm,
+  bottom=3cm,
+  headheight=14pt
+}
+
+% === GRÁFICOS Y COLOR ===
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{subcaption}
+
+% Color corporativo UZ
+\definecolor{tfgblue}{RGB}{51,102,153}
+
+% === TABLAS ===
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+
+% === MATEMÁTICAS ===
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+% === CÓDIGO FUENTE (LISTINGS) ===
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{red},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=8pt,
+  backgroundcolor=\color{gray!10},
+  frame=single,
+  rulecolor=\color{black!30},
+  breaklines=true,
+  captionpos=b,
+  tabsize=2,
+  showstringspaces=false
+}
+
+% === ALGORITMOS ===
+\usepackage[ruled,vlined,linesnumbered,spanish]{algorithm2e}
+\SetAlgorithmName{Algoritmo}{algoritmo}{Índice de algoritmos}
+
+% === FORMATO DE CAPÍTULOS Y SECCIONES ===
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-20pt}{40pt}
+
+% === BIBLIOGRAFÍA (IEEE con Biber) ===
+\usepackage{csquotes}
+\usepackage[
+  style=ieee,
+  citestyle=numeric-comp,
+  sorting=none,
+  backend=biber
+]{biblatex}
+\addbibresource{referencias.bib}
+
+% Configuración para mejor manejo de URLs en la bibliografía
+\setcounter{biburlnumpenalty}{9000}
+\setcounter{biburlucpenalty}{9000}
+\setcounter{biburllcpenalty}{9000}
+
+% === HIPERVÍNCULOS ===
+\usepackage[pdfencoding=auto]{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  citecolor=green!50!black,
+  urlcolor=blue!70!black,
+  pdftitle={Título del Trabajo Fin de Grado},
+  pdfauthor={Nombre y apellidos del autor},
+  pdfsubject={Trabajo Fin de Grado/Máster},
+  pdfkeywords={palabra clave 1, palabra clave 2, palabra clave 3},
+  bookmarksnumbered=true,
+  bookmarksopen=true,
+  bookmarksopenlevel=1
+}
+
+% === REFERENCIAS CRUZADAS INTELIGENTES ===
+\usepackage[spanish,capitalize]{cleveref}
+\crefname{figure}{figura}{figuras}
+\Crefname{figure}{Figura}{Figuras}
+\crefname{table}{tabla}{tablas}
+\Crefname{table}{Tabla}{Tablas}
+\crefname{equation}{ecuación}{ecuaciones}
+\Crefname{equation}{Ecuación}{Ecuaciones}
+\crefname{chapter}{capítulo}{capítulos}
+\Crefname{chapter}{Capítulo}{Capítulos}
+\crefname{section}{sección}{secciones}
+\Crefname{section}{Sección}{Secciones}
+\crefname{listing}{listado}{listados}
+\Crefname{listing}{Listado}{Listados}
+\crefname{algorithm}{algoritmo}{algoritmos}
+\Crefname{algorithm}{Algoritmo}{Algoritmos}
+
+% === ENCABEZADOS Y PIES DE PÁGINA ===
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[RE]{\leftmark}
+\fancyhead[LO]{\rightmark}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+% === ANEXOS ===
+\usepackage[toc,page]{appendix}
+\renewcommand{\appendixtocname}{Anexos}
+\renewcommand{\appendixpagename}{Anexos}
+
+% === GLOSARIOS Y ACRÓNIMOS ===
+\usepackage[acronym,toc,numberedsection=autolabel]{glossaries}
+\makeglossaries
+
+% Definición de ejemplos de acrónimos (edítalos o bórralos)
+\newacronym{tfg}{TFG}{Trabajo Fin de Grado}
+\newacronym{tfm}{TFM}{Trabajo Fin de Máster}
+\newacronym{unizar}{UNIZAR}{Universidad de Zaragoza}
+
+% Definición de términos del glosario
+\newglossaryentry{latex}{
+  name=LaTeX,
+  description={Sistema de composición de textos orientado a la creación de documentos científicos y técnicos de alta calidad tipográfica}
+}
+
+% === COMANDOS PERSONALIZADOS ===
+\usepackage{xspace}
+\newcommand{\ie}{i.e.\xspace}
+\newcommand{\eg}{e.g.\xspace}
+\newcommand{\etal}{et al.\xspace}
+
+% ============================================================
+% INICIO DEL DOCUMENTO
+% ============================================================
+\begin{document}
+
+% 1. Portada oficial integrada
+\input{titlepage.tex}
+
+% 2. Páginas preliminares (Numeración romana)
+\pagenumbering{Roman}
+\setcounter{page}{1}
+
+% Resumen y Abstract
+\input{chapters/00_abstract.tex}
+
+% Índices
+\clearpage
+\tableofcontents
+
+\clearpage
+\listoffigures
+
+\clearpage
+\listoftables
+
+\clearpage
+\lstlistoflistings
+
+% Lista de acrónimos / Glosario (Descomentar si se usan)
+% \clearpage
+% \printglossary[type=\acronymtype,title=Lista de acrónimos]
+% \clearpage
+% \printglossary[title=Glosario]
+
+% 3. Cuerpo principal del documento (Numeración arábiga)
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\input{chapters/01_introduccion.tex}
+\input{chapters/02_metodologia.tex}
+\input{chapters/03_desarrollo.tex}
+\input{chapters/04_resultados.tex}
+\input{chapters/05_conclusiones.tex}
+
+% 4. Bibliografía
+\clearpage
+\printbibliography[heading=bibintoc,title={Referencias}]
+
+% 5. Anexos
+\clearpage
+\begin{appendices}
+  % Anexo con ejemplos y sintaxis útil de LaTeX (coméntalo o bórralo cuando no lo necesites)
+  \input{chapters/99_ejemplos.tex}
+\end{appendices}
+
+\end{document}
