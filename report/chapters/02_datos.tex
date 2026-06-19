@@ -1,0 +1,87 @@
+% ============================================================
+% CAPÍTULO 2: DATOS
+% ============================================================
+
+\chapter{Datos}
+\label{chap:datos}
+
+La adquisición de datos de calidad es fundamental para el desarrollo de modelos capaces
+de predecir con generalidad y fiabilidad. Por ello se han incorporado varias bases de datos
+obtenidas de fuentes públicas, en concreto, de los repositorios de PhysioNet.
+Estas bases de datos contienen registros de electrocardiogramas (ECG) con anotaciones
+sobre episodios de fibrilación auricular paroxística (PAF).
+
+\section{Bases de datos utilizadas}
+\label{sec:bases_datos}
+
+Para el desarrollo de este proyecto se han empleado 5 bases de datos detalladas a continuación:
+
+\subsection{PAF Prediction Challenge Database (afpdb)}
+\label{subsec:afpdb}
+Esta base de datos~\cite{moody_paf_2001} fue diseñada para el PhysioNet Challenge de predicción de
+Fibrilación Auricular Paroxística. Contiene registros de ECG de dos canales con
+una duración de 30 minutos y una frecuencia de muestreo de 128~Hz. El conjunto de
+aprendizaje consta de 50 parejas de registros (100 registros en total) procedentes
+de 48 sujetos:
+\begin{itemize}
+  \item \textbf{Registros tipo 'n':} 50 registros procedentes de sujetos sanos o sin antecedentes de Fibrilación Auricular.
+  \item \textbf{Registros tipo 'p':} 50 registros obtenidos inmediatamente antes de un episodio de Fibrilación Auricular (Pre-PAF).
+\end{itemize}
+Adicionalmente, existe un conjunto de test con otros 100 registros procedentes de 50 sujetos, que utilizaremos para compararnos
+con otros trabajos publicados.
+
+\subsection{China Physiological Signal Challenge 2021 (cpsc2021)}
+\label{subsec:cpsc2021}
+Esta base de datos~\cite{PhysioNet-cpsc2021-1.0.0} contiene 1425 registros de 105 sujetos,
+dos canales, muestreadas a 200~Hz. Contiene anotaciones
+de ritmo, en concreto, de inicio y fin de episodios de Fibrilación Auricular.
+
+\subsection{Long-Term Atrial Fibrillation Database (ltafdb)}
+\label{subsec:ltafdb}
+Esta base de datos~\cite{petrutiu_long-term_2003} contiene registros de ECG ambulatorio de
+larga duración (aproximadamente 24 horas por registro), grabados a una frecuencia de muestreo
+de 128~Hz. Consta de 84 registros de 84 sujetos con fibrilación auricular
+paroxística o sostenida.
+
+\subsection{Smart Health Devices - Atrial Fibrillation Database (shdb-af)}
+\label{subsec:shdb}
+Esta base de datos~\cite{PhysioNet-shdb-af-1.0.1} proporciona señales de ECG de dos
+canales registradas mediante dispositivos wearables en condiciones cotidianas.
+Consta de 128 registros
+de larga duración (24 horas) procedentes de 122 sujetos con PAF,
+muestreados originalmente a 125~Hz y resampleados a 200~Hz.
+Nos proporciona la asignación entre señal y sujeto para prevenir filtraciones (leakage)
+
+\subsection{MIT-BIH Atrial Fibrillation Database (afdb)}
+\label{subsec:afdb}
+Esta base de datos~\cite{moody_mit-bih_1992} consta de 25 registros de ECG de dos
+canales con una duración de 10 horas cada uno, grabados a 250~Hz.
+Cabe destacar que de 25, 23 de estos registros contienen señales de
+ECG utilizables, ya que los otros 2 constan únicamente de anotaciones.
+
+\section{Características comparativas de los conjuntos de datos}
+\label{sec:caracteristicas_datos}
+
+A continuación se presenta una tabla~\ref{tab:resumen_datos} que resume las características de las 5 bases de datos utilizadas
+en este proyecto, incluyendo el número de pacientes, el número de registros, el número
+de canales y la frecuencia de muestreo de cada base de datos.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Resumen comparativo de las 5 bases de datos de estudio}
+  \label{tab:resumen_datos}
+  \begin{tabular}{lcccc}
+    \toprule
+    \textbf{Base de datos} & \textbf{Nº Pacientes} & \textbf{Nº Registros} & \textbf{Canales} & \textbf{Frec. Muestreo} \\
+    \midrule
+    \texttt{afpdb~\cite{moody_paf_2001}} & 48 (98) & 100 (300) & 2 & 128 Hz \\
+    \texttt{cpsc2021~\cite{PhysioNet-cpsc2021-1.0.0}} & 105 & 1425 & 2 & 200 Hz \\
+    \texttt{ltafdb~\cite{petrutiu_long-term_2003}} & 84 & 84 & 2 & 128 Hz \\
+    \texttt{shdb-af~\cite{PhysioNet-shdb-af-1.0.1}} & 122 & 128 & 2 & 200 Hz \\
+    \texttt{afdb~\cite{moody_mit-bih_1992}} & 25 & 25 (23) & 2 & 250 Hz \\
+    \bottomrule
+  \end{tabular}
+  \vskip 5pt
+  \small
+  \textit{Nota:} Para \texttt{afpdb}, entre paréntesis se indica el total incluyendo el conjunto de test. Para \texttt{afdb}, entre paréntesis se indica el número de registros que contienen señales utilizables.
+\end{table}

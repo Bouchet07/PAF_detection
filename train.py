@@ -3,7 +3,7 @@ from src.training.runner import train
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train a 1D ECG model for Paroxysmal Atrial Fibrillation (PAF) prediction.")
-    parser.add_argument("--model_type", type=str, default="resnet1d", choices=["resnet1d", "transformer", "senet"],
+    parser.add_argument("--model_type", type=str, default="resnet1d", choices=["resnet1d", "transformer", "senet", "mamba"],
                         help="Model architecture to train (default: resnet1d)")
     parser.add_argument("--window_seconds", type=int, default=10,
                         help="Input window size in seconds (default: 10)")

@@ -1,0 +1,193 @@
+% ============================================================
+% CAPÍTULO 3: METODOLOGÍA
+% ============================================================
+
+\chapter{Metodología}
+\label{chap:metodologia}
+
+A continuación se detallan los métodos que se han seguido para la descarga, preprocesamiento
+de las señales, extracción de características de variabilidad de ritmo cardíaco  (HRV),
+y las arquitecturas de las redes neuronales utilizadas para la predicción de
+Fibrilación Auricular a partir de segmentos de ECG en ritmo sinusal.
+
+\section{Descarga y lectura de bases de datos}
+\label{sec:descarga}
+
+La descarga de bases de datos se ha realizado desde el Cluster del Instituto de Investigación en
+Ingeniería de Aragón (I3A), en concreto, en el grupo de investigación BSICoS,
+utilizando el gestor de descargas \texttt{wget}.
+
+Para la lectura, se ha utilizado la librería \texttt{wfdb} de Python,
+que permite leer los registros ECG y extraer las anotaciones correspondientes.
+Puesto que el trabajo se centra en la predicción inminente, se han extraido ventanas
+inmediatamente anteriores a los episodios de fibrilación auricular (Pre-PAF), en concreto,
+de un máximo de 5 minutos anteriores al episodio, además de segmentos de control de ritmo sinusal estable.
+
+Cada registro se ha cargado en memoria como un array de \texttt{NumPy} para su posterior procesamiento.
+
+
+\section{Preprocesamiento}
+\label{sec:preprocesamiento}
+
+El preprocesamiento es esencial por varias razones: las bases de datos utilizadas no
+presentan la misma frecuencia de muestreo, ni están medidas con el mismo equipo, por tanto
+hay que implementar un pipeline que unifique las características para que los modelos puedan generalizar correctamente.
+El pipeline de preprocesamiento consta de tres pasos principales:
+
+\begin{enumerate}
+  \item \textbf{Armonización de Canales y Frecuencia de Muestreo:}
+  Se unifican todas las señales a exactamente dos canales y una frecuencia de
+  muestreo de $128$~Hz. Si un registro posee menos de dos canales, se realiza un relleno
+  (padding) con ceros; si posee más, se seleccionan únicamente las dos primeras
+  derivaciones. En nuestro caso todas las bases de datos contienen 2 canales, pero se comprueba
+  por generalidad, para tener la posibilidad de añadir posteriormente bases de datos adicionales.
+  El remuestreo se ejecuta mediante interpolación trigonométrica.
+  \item \textbf{Atenuación del Ruido e Interferencia:}
+  La eliminación del ruido remanente se delega en las primeras capas convolucionales del modelo, que aprenden
+  filtros adaptativos optimizados para la tarea.
+  \item \textbf{Normalización Z-score Local:}
+  Para evitar sesgos debido a las variaciones inter-sujeto o inter-dispositivo en la
+  amplitud absoluta de las señales, cada segmento se normaliza de forma independiente
+  por canal en el dataloader aplicando:
+  \[
+  x_{\text{norm}} = \frac{x - \mu}{\sigma + 10^{-8}}
+  \]
+  donde $\mu$ y $\sigma$ representan la media y desviación estándar de la amplitud
+  de cada ventana.
+\end{enumerate}
+
+
+\section{Extracción de Ventanas y Prevención de Data Leakage}
+\label{sec:extraccion_ventanas}
+
+El pipeline procesa los registros de manera dinámica para extraer los dos tipos de
+segmentos requeridos para la clasificación binaria:
+
+\begin{itemize}
+  \item \textbf{Clase 1 (Pre-PAF):}
+
+  Esta clase corresponde al estado inmediatamente anterior al inidicio de un episodio de
+  fibrilación auricular. Para la extracción de las ventanas, se ha optado por extraer
+  ventanas de longitud variable, de entre $10$ segundos y $5$ minutos ($300$ segundos) previos
+  al episodio. La ventana retrocede en el tiempo hasta encontrarse con el inicio del
+  registro o el final del episodio arrítmico previo, garantizando que el segmento
+  contenga únicamente ritmo sinusal.
+
+  \item \textbf{Clase 0 (Normal/Control):}
+  Se extraen segmentos estables de ritmo sinusal
+  de $5$ minutos de duración, que se encuentren alejados al menos $30$ minutos
+  ($1800$ segundos) de cualquier episodio
+  (tanto antes como después), evitando zonas de transición.
+
+  Esto es importante, ya que estamos extrayendo ventanas de clase normal de pacientes 
+  tanto con PAF como sanos.
+
+  Esta estrategia es fundamental para evitar el sesgo de clasificación inter-sujeto.
+  Si la Clase 0 se compusiera
+  únicamente de individuos sanos, los modelos tenderían a clasificar diferencias
+  morfológicas asociadas a la cardiopatía estructural del paciente (cardiopatía de fondo) en lugar de
+  identificar los cambios transitorios que desencadenan el episodio.
+  Al incluir el ritmo sinusal basal del propio paciente como control, se
+  garantiza que el modelo aprenda a predecir la transición temporal hacia la arritmia.
+\end{itemize}
+
+Para evitar la filtración de datos (\textit{data leakage}), que invalidaría los
+resultados, los segmentos se agrupan estrictamente por sujeto.
+Esto garantiza que en validación y test no haya pacientes que ya hayan aparecido en
+el entrenamiento, ya que el modelo podría aprender a reconocer la morfología de un paciente concreto en lugar de
+aprender a generalizar la predicción de la fibrilación auricular.
+
+\section{Aumento de Datos (Data Augmentation)}
+\label{sec:aumentacion}
+
+Debido a que los modelos escalan mejor con grandes cantidades de datos, se ha 
+implementado un pipeline de aumento de datos, que aplica modificaciones realistas a las
+señales directamente en el dataloader con una probabilidad
+del $50\%$ para cada una:
+\begin{itemize}
+  \item \textbf{Deriva de la Línea de Base (\textit{Baseline Wander}):} Se simula la deriva lenta causada por la respiración del paciente sumando una señal sinusoidal:
+  \[
+  x_{\text{aug}}(t) = x(t) + A \cdot \sin(2\pi \cdot f \cdot t)
+  \]
+  donde la frecuencia $f$ se muestrea de manera uniforme en $[0.1, 0.5]$~Hz y la amplitud $A$ en $[0.05, 0.2]$.
+  \item \textbf{Ruido Gaussiano Aditivo:} Se simula el ruido instrumental sumando ruido blanco gaussiano con una desviación estándar variable $\sigma_{\text{noise}} \sim U(0.01, 0.05)$.
+  \item \textbf{Escalado Aleatorio:} Se multiplica el segmento por un factor de escala $s \sim U(0.85, 1.15)$ para simular fluctuaciones en la ganancia del amplificador.
+  \item \textbf{Slice Aleatorio de Ventana:} Dado que las redes se entrenan con ventanas
+  de $10$ segundos, y contamos con señales de hasta 5 minutos, se extraen 10 segundos aleatorios.
+  En validación y test, se toma de forma determinista los últimos $10$ segundos
+  (el instante más cercano al inicio de la crisis en la Clase 1).
+\end{itemize}
+
+\section{Extracción de Variabilidad del Ritmo Cardíaco (HRV)}
+\label{sec:hrv}
+
+Como información complementaria, se extraen nueve
+variables clásicas de variabilidad del ritmo cardíaco (HRV) a partir de los intervalos
+RR (detectados mediante las anotaciones de los picos QRS originales rescalados a $128$~Hz):
+\begin{itemize}
+  \item \textbf{Métricas Temporales:} Media de los intervalos RR (\texttt{mean\_rr}),
+  desviación estándar de los intervalos RR (\texttt{std\_rr}), raíz cuadrada de la media
+  de las diferencias al cuadrado de intervalos RR sucesivos (\texttt{rmssd}),
+  porcentaje de intervalos sucesivos que difieren en más de 50~ms (\texttt{pnn50}),
+  media de la frecuencia cardíaca instantánea (\texttt{mean\_hr}) y su desviación
+  estándar (\texttt{std\_hr}).
+  \item \textbf{Métricas Frecuenciales:} Energía en baja frecuencia
+  (\texttt{lf}, $0.04-0.15$~Hz), energía en alta frecuencia (\texttt{hf}, $0.15-0.4$~Hz)
+  obtenidas por el método de Welch, y la relación de balance autonómico
+  (\texttt{lf\_hf\_ratio}).
+\end{itemize}
+Estas características se normalizan globalmente utilizando la media y desviación estándar del conjunto de entrenamiento de referencia antes de ser introducidas en el modelo.
+
+\section{Arquitecturas de Aprendizaje Profundo}
+\label{sec:arquitecturas}
+
+Se proponen cuatro arquitecturas para procesar la señal de entrada $\mathbf{X} \in \mathbb{R}^{2 \times L}$ (donde $L = 1280$ muestras para una ventana de $10$ segundos a $128$~Hz):
+
+\subsection{ResNet 1D (Baseline)}
+Basada en bloques convolucionales 1D residuales. Cada bloque residual consta de capas
+convolucionales seguidas de normalización(\textit{Batch Normalization}),
+activación ReLU y una \textit{skip connection} que suma la entrada
+original a la salida del bloque, facilitando el flujo del gradiente en arquitecturas
+profundas.
+
+\subsection{SEResNet 1D (Atención de Canales)}
+Añade bloques \textit{Squeeze-and-Excitation} (SE) tras cada bloque residual.
+El bloque SE comprime la información espacial del canal mediante un
+\textit{Global Average Pooling} y, a través de una pequeña red \textit{fully connected}
+con cuello de botella, calcula un peso de excitación para cada canal.
+Esto permite a la red ponderar la importancia relativa de cada una de las dos
+derivaciones del ECG de forma dinámica.
+
+\subsection{CNN-Transformer Híbrido}
+Combina las fortalezas de las redes convolucionales y los mecanismos de atención.
+Las capas convolucionales iniciales extraen rasgos morfológicos locales y reducen la
+dimensión temporal de la secuencia. Posteriormente, el Transformer procesa
+la secuencia resultante. Utilizando mecanismos de \textit{Multi-Head Self-Attention},
+el Transformer captura relaciones de largo alcance
+y dependencias temporales complejas a lo largo de todo el segmento de ECG.
+
+\subsection{Mamba 1D (Modelo de Espacio de Estados)}
+Como alternativa al Transformer, se implementa una arquitectura
+basada en \textit{State space models} (SSM) de selección variable (Mamba).
+Mamba parametriza un sistema lineal invariante en el tiempo que procesa la señal a través
+de una recurrencia lineal selectiva y dependiente de los datos. Esto permite capturar
+dependencias de largo alcance con una complejidad computacional que escala linealmente
+$O(L)$ en lugar de cuadrática $O(L^2)$ como ocurre con en el Transformer.
+
+\subsection{Integración de Características HRV}
+Adicionalmente, las nueve variables normalizadas de HRV se introducen en un perceptrón multicapa
+(MLP) de dos capas en las cabezas clasificatorias. La representación vectorial resultante
+se concatena con el vector de características morfológicas extraído por la red
+(ResNet, SEResNet, Transformer o Mamba) a la salida de su capa de promedio global.
+Finalmente, esta representación combinada se introduce en una capa lineal clasificadora
+con activación Softmax para emitir la probabilidad de Pre-PAF.
+
+\section{Estrategia de Evaluación y Validación Cruzada}
+\label{sec:estrategia_evaluacion}
+
+Dado el fuerte desbalance de clases a favor de la clase Pre-PAF tras el proceso de aumentación, y la heterogeneidad de los datos, el diseño experimental se define mediante:
+\begin{itemize}
+  \item \textbf{Validación Cruzada (5-Fold GroupKFold):} El dataset total se divide en 5 \textit{folds} de forma que todos los segmentos de un mismo paciente queden en el mismo \textit{fold}. En cada iteración, se entrenan los modelos en 4 \textit{folds} y se validan en el restante.
+  \item \textbf{Evaluación Externa:} Para comparar los modelos en igualdad de condiciones con la literatura científica, los modelos se evalúan adicionalmente en el conjunto de prueba independiente de la base de datos \texttt{afpdb} (PAF Prediction Challenge).
+  \item \textbf{Métricas de Calidad:} Se evalúa el rendimiento utilizando la sensibilidad (Recall), especificidad, precisión, puntuación F1 macro (F1 Macro), F1 de la clase Pre-PAF (F1 Clase 1) y el área bajo la curva ROC (AUC-ROC).
+\end{itemize}

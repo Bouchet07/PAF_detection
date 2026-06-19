@@ -46,3 +46,85 @@
   type        = {Informe},
   address     = {Ciudad, País}
 }
+
+// bases de datos de PhysioNet
+
+@misc{moody_paf_2001,
+	title = {{PAF} Prediction Challenge Database},
+	url = {https://physionet.org/content/afpdb/},
+	doi = {10.13026/C2H59W},
+	abstract = {This database of two-channel {ECG} recordings has been created for use in the Computers in Cardiology Challenge 2001, an open competition with the goal of developing automated methods for predicting paroxysmal atrial fibrillation ({PAF}). See the challenge announcement for information about the competition, and see Predicting Onset of Atrial Fibrillation for a brief overview of the clinical problem, its significance, and suggestions for further reading on the subject.},
+	publisher = {physionet.org},
+	author = {Moody, George B and Goldberger, Ary L and {McClennen}, Seth and Swiryn, Steven P},
+	date = {2001},
+}
+// urldate = {2026-06-12},
+
+@article{PhysioNet-cpsc2021-1.0.0,
+  author = {Wang, Xingyao and Ma, Caiyun and Zhang, Xiangyu and Gao, Hongxiang and Clifford, Gari D. and Liu, Chengyu},
+  title = {{Paroxysmal Atrial Fibrillation Events Detection from Dynamic ECG Recordings: The 4th China Physiological Signal Challenge 2021}},
+  journal = {{PhysioNet}},
+  year = {2021},
+  month = jun,
+  note = {Version 1.0.0},
+  doi = {10.13026/ksya-qw89},
+  url = {https://doi.org/10.13026/ksya-qw89}
+}
+
+@misc{petrutiu_long-term_2003,
+	title = {The Long-Term {AF} Database},
+	url = {https://physionet.org/content/ltafdb/},
+	doi = {10.13026/C2QG6Q},
+	abstract = {This database includes 84 long-term {ECG} recordings of subjects with paroxysmal or sustained atrial fibrillation ({AF}). Each record contains two simultaneously recorded {ECG} signals digitized at 128 Hz with 12-bit resolution over a 20 {mV} range; record durations vary but are typically 24 to 25 hours.},
+	publisher = {physionet.org},
+	author = {Petrutiu, Simona and Sahakian, Alan V and Swiryn, Steven},
+	date = {2003},
+}
+// urldate = {2026-06-12},
+@article{PhysioNet-shdb-af-1.0.1,
+  author = {Tsutsui, Kenta and {Biton Brimer}, Shany and Behar, Joachim},
+  title = {{SHDB-AF: a Japanese Holter ECG database of atrial fibrillation}},
+  journal = {{PhysioNet}},
+  year = {2025},
+  month = apr,
+  note = {Version 1.0.1},
+  doi = {10.13026/n6yq-fq90},
+  url = {https://doi.org/10.13026/n6yq-fq90}
+}
+
+@misc{moody_mit-bih_1992,
+	title = {{MIT}-{BIH} Atrial Fibrillation Database},
+	url = {https://physionet.org/content/afdb/},
+	doi = {10.13026/C2MW2D},
+	abstract = {This database includes 25 long-term {ECG} recordings of human subjects with atrial fibrillation (mostly paroxysmal).},
+	publisher = {physionet.org},
+	author = {Moody, George B and Mark, Roger G},
+	date = {1992},
+}
+// urldate = {2026-06-12},
+
+// Articulos de interes
+@article{lahoti_mamba-3_2026,
+	title = {Mamba-3: Improved Sequence Modeling using State Space Principles},
+	url = {http://arxiv.org/abs/2603.15569},
+	doi = {10.48550/arXiv.2603.15569},
+	shorttitle = {Mamba-3},
+	abstract = {Scaling inference-time compute has emerged as an important driver of {LLM} performance, making inference efficiency a central focus of model design alongside model quality. While the current Transformer-based models deliver strong model quality, their quadratic compute and linear memory make inference expensive. This has spurred the development of sub-quadratic models with reduced linear compute and constant memory requirements. However, many recent linear models trade off model quality and capability for algorithmic efficiency, failing on tasks such as state tracking. Moreover, their theoretically linear inference remains hardware-inefficient in practice. Guided by an inference-first perspective, we introduce three core methodological improvements inspired by the state space model ({SSM}) viewpoint of linear models. We combine: (1) a more expressive recurrence derived from {SSM} discretization, (2) a complex-valued state update rule that enables richer state tracking, and (3) a multi-input, multi-output ({MIMO}) formulation for better model performance without increasing decode latency. Together with architectural refinements, our Mamba-3 model achieves significant gains across retrieval, state-tracking, and downstream language modeling tasks. At the 1.5B scale, Mamba-3 improves average downstream accuracy by 0.6 percentage points compared to the next best model (Gated {DeltaNet}), with Mamba-3's {MIMO} variant further improving accuracy by another 1.2 points for a total 1.8 point gain. Across state-size experiments, Mamba-3 achieves comparable perplexity to Mamba-2 despite using half of its predecessor's state size. Our evaluations demonstrate Mamba-3's ability to advance the performance-efficiency Pareto frontier.},
+	number = {{arXiv}:2603.15569},
+	publisher = {{arXiv}},
+	author = {Lahoti, Aakash and Li, Kevin Y. and Chen, Berlin and Wang, Caitlin and Bick, Aviv and Kolter, J. Zico and Dao, Tri and Gu, Albert},
+	date = {2026-03-16},
+	eprinttype = {arxiv},
+	eprint = {2603.15569 [cs.LG]},
+	keywords = {Computer Science - Machine Learning},
+}
+
+@inreference{wikipedia_atrial_2026,
+	title = {Atrial fibrillation},
+	rights = {Creative Commons Attribution-{ShareAlike} License},
+	url = {https://en.wikipedia.org/w/index.php?title=Atrial_fibrillation&oldid=1350567686},
+	booktitle = {Wikipedia},
+	date = {2026-04-22},
+	langid = {english},
+	note = {Page Version {ID}: 1350567686},
+}

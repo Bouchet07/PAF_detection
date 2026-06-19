@@ -1,0 +1,442 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global/global}
+    \entry{moody_paf_2001}{misc}{}{}
+      \name{author}{4}{}{%
+        {{hash=71ab5dbee9c717c687e1b2c142bce563}{%
+           family={Moody},
+           familyi={M\bibinitperiod},
+           given={George\bibnamedelima B},
+           giveni={G\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+        {{hash=c99be12ffae540b5ba4cb3a23ee3ec0a}{%
+           family={Goldberger},
+           familyi={G\bibinitperiod},
+           given={Ary\bibnamedelima L},
+           giveni={A\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=72772a8ecc9beb59fd55c375cb09b679}{%
+           family={{McClennen}},
+           familyi={M\bibinitperiod},
+           given={Seth},
+           giveni={S\bibinitperiod}}}%
+        {{hash=1d2bf06669b2e8b8da71f898a6638526}{%
+           family={Swiryn},
+           familyi={S\bibinitperiod},
+           given={Steven\bibnamedelima P},
+           giveni={S\bibinitperiod\bibinitdelim P\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {physionet.org}%
+      }
+      \strng{namehash}{0fdbda464b507aa4920917c430ee76b9}
+      \strng{fullhash}{b7729c0c4d91f6dccb73db740787635b}
+      \strng{fullhashraw}{b7729c0c4d91f6dccb73db740787635b}
+      \strng{bibnamehash}{b7729c0c4d91f6dccb73db740787635b}
+      \strng{authorbibnamehash}{b7729c0c4d91f6dccb73db740787635b}
+      \strng{authornamehash}{0fdbda464b507aa4920917c430ee76b9}
+      \strng{authorfullhash}{b7729c0c4d91f6dccb73db740787635b}
+      \strng{authorfullhashraw}{b7729c0c4d91f6dccb73db740787635b}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{This database of two-channel {ECG} recordings has been created for use in the Computers in Cardiology Challenge 2001, an open competition with the goal of developing automated methods for predicting paroxysmal atrial fibrillation ({PAF}). See the challenge announcement for information about the competition, and see Predicting Onset of Atrial Fibrillation for a brief overview of the clinical problem, its significance, and suggestions for further reading on the subject.}
+      \field{title}{{PAF} Prediction Challenge Database}
+      \field{year}{2001}
+      \field{dateera}{ce}
+      \verb{doi}
+      \verb 10.13026/C2H59W
+      \endverb
+      \verb{urlraw}
+      \verb https://physionet.org/content/afpdb/
+      \endverb
+      \verb{url}
+      \verb https://physionet.org/content/afpdb/
+      \endverb
+    \endentry
+    \entry{PhysioNet-cpsc2021-1.0.0}{article}{}{}
+      \name{author}{6}{}{%
+        {{hash=7f3ac3a915fd503bf7c42bec685289f0}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Xingyao},
+           giveni={X\bibinitperiod}}}%
+        {{hash=1b51309bd7f4a3d0d73e9fa7253d5e7c}{%
+           family={Ma},
+           familyi={M\bibinitperiod},
+           given={Caiyun},
+           giveni={C\bibinitperiod}}}%
+        {{hash=5e72bc22dbcf0984c6d113d280e36990}{%
+           family={Zhang},
+           familyi={Z\bibinitperiod},
+           given={Xiangyu},
+           giveni={X\bibinitperiod}}}%
+        {{hash=22f74c9ba1b3500dd5240155b2f28d03}{%
+           family={Gao},
+           familyi={G\bibinitperiod},
+           given={Hongxiang},
+           giveni={H\bibinitperiod}}}%
+        {{hash=b927e667e291a47a7437a9a8d631ed0e}{%
+           family={Clifford},
+           familyi={C\bibinitperiod},
+           given={Gari\bibnamedelima D.},
+           giveni={G\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+        {{hash=3fe045bdde35f52027af904715c68477}{%
+           family={Liu},
+           familyi={L\bibinitperiod},
+           given={Chengyu},
+           giveni={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{362bb452fee1f528e0b16990d36527e2}
+      \strng{fullhash}{d991ca5dab8f1df7a94000b53b303e69}
+      \strng{fullhashraw}{d991ca5dab8f1df7a94000b53b303e69}
+      \strng{bibnamehash}{d991ca5dab8f1df7a94000b53b303e69}
+      \strng{authorbibnamehash}{d991ca5dab8f1df7a94000b53b303e69}
+      \strng{authornamehash}{362bb452fee1f528e0b16990d36527e2}
+      \strng{authorfullhash}{d991ca5dab8f1df7a94000b53b303e69}
+      \strng{authorfullhashraw}{d991ca5dab8f1df7a94000b53b303e69}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{{PhysioNet}}
+      \field{month}{6}
+      \field{note}{Version 1.0.0}
+      \field{title}{{Paroxysmal Atrial Fibrillation Events Detection from Dynamic ECG Recordings: The 4th China Physiological Signal Challenge 2021}}
+      \field{year}{2021}
+      \verb{doi}
+      \verb 10.13026/ksya-qw89
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.13026/ksya-qw89
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.13026/ksya-qw89
+      \endverb
+    \endentry
+    \entry{petrutiu_long-term_2003}{misc}{}{}
+      \name{author}{3}{}{%
+        {{hash=07f772be77a2f03cbc032c059f982655}{%
+           family={Petrutiu},
+           familyi={P\bibinitperiod},
+           given={Simona},
+           giveni={S\bibinitperiod}}}%
+        {{hash=44b05974076228cac589b9ca9df24633}{%
+           family={Sahakian},
+           familyi={S\bibinitperiod},
+           given={Alan\bibnamedelima V},
+           giveni={A\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
+        {{hash=c3da6d79a8c301aac82c3d16ef09e6d1}{%
+           family={Swiryn},
+           familyi={S\bibinitperiod},
+           given={Steven},
+           giveni={S\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {physionet.org}%
+      }
+      \strng{namehash}{301f8f3ee78e1f3383b81430d1a80a3f}
+      \strng{fullhash}{2a5c66311e97afae7e89c69762124da8}
+      \strng{fullhashraw}{2a5c66311e97afae7e89c69762124da8}
+      \strng{bibnamehash}{2a5c66311e97afae7e89c69762124da8}
+      \strng{authorbibnamehash}{2a5c66311e97afae7e89c69762124da8}
+      \strng{authornamehash}{301f8f3ee78e1f3383b81430d1a80a3f}
+      \strng{authorfullhash}{2a5c66311e97afae7e89c69762124da8}
+      \strng{authorfullhashraw}{2a5c66311e97afae7e89c69762124da8}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{This database includes 84 long-term {ECG} recordings of subjects with paroxysmal or sustained atrial fibrillation ({AF}). Each record contains two simultaneously recorded {ECG} signals digitized at 128 Hz with 12-bit resolution over a 20 {mV} range; record durations vary but are typically 24 to 25 hours.}
+      \field{title}{The Long-Term {AF} Database}
+      \field{year}{2003}
+      \field{dateera}{ce}
+      \verb{doi}
+      \verb 10.13026/C2QG6Q
+      \endverb
+      \verb{urlraw}
+      \verb https://physionet.org/content/ltafdb/
+      \endverb
+      \verb{url}
+      \verb https://physionet.org/content/ltafdb/
+      \endverb
+    \endentry
+    \entry{PhysioNet-shdb-af-1.0.1}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=7dc9a1d77f54defdfdb3ddb334f2634a}{%
+           family={Tsutsui},
+           familyi={T\bibinitperiod},
+           given={Kenta},
+           giveni={K\bibinitperiod}}}%
+        {{hash=b89ffe2f7870aaaa3d7e1fa4e8c5b6ed}{%
+           family={{Biton Brimer}},
+           familyi={B\bibinitperiod},
+           given={Shany},
+           giveni={S\bibinitperiod}}}%
+        {{hash=b200b53b12615f3cfbf1428bc37deb8b}{%
+           family={Behar},
+           familyi={B\bibinitperiod},
+           given={Joachim},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{43e170ae9e2c0559c133745560da73dd}
+      \strng{fullhash}{48f5ab93d082be0de64c74cc0c3e650d}
+      \strng{fullhashraw}{48f5ab93d082be0de64c74cc0c3e650d}
+      \strng{bibnamehash}{48f5ab93d082be0de64c74cc0c3e650d}
+      \strng{authorbibnamehash}{48f5ab93d082be0de64c74cc0c3e650d}
+      \strng{authornamehash}{43e170ae9e2c0559c133745560da73dd}
+      \strng{authorfullhash}{48f5ab93d082be0de64c74cc0c3e650d}
+      \strng{authorfullhashraw}{48f5ab93d082be0de64c74cc0c3e650d}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{{PhysioNet}}
+      \field{month}{4}
+      \field{note}{Version 1.0.1}
+      \field{title}{{SHDB-AF: a Japanese Holter ECG database of atrial fibrillation}}
+      \field{year}{2025}
+      \verb{doi}
+      \verb 10.13026/n6yq-fq90
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.13026/n6yq-fq90
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.13026/n6yq-fq90
+      \endverb
+    \endentry
+    \entry{moody_mit-bih_1992}{misc}{}{}
+      \name{author}{2}{}{%
+        {{hash=71ab5dbee9c717c687e1b2c142bce563}{%
+           family={Moody},
+           familyi={M\bibinitperiod},
+           given={George\bibnamedelima B},
+           giveni={G\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+        {{hash=2193bac90baddb616fc4dcd2f366de81}{%
+           family={Mark},
+           familyi={M\bibinitperiod},
+           given={Roger\bibnamedelima G},
+           giveni={R\bibinitperiod\bibinitdelim G\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {physionet.org}%
+      }
+      \strng{namehash}{c4df7241023127cc650d6cb0e52f20da}
+      \strng{fullhash}{c4df7241023127cc650d6cb0e52f20da}
+      \strng{fullhashraw}{c4df7241023127cc650d6cb0e52f20da}
+      \strng{bibnamehash}{c4df7241023127cc650d6cb0e52f20da}
+      \strng{authorbibnamehash}{c4df7241023127cc650d6cb0e52f20da}
+      \strng{authornamehash}{c4df7241023127cc650d6cb0e52f20da}
+      \strng{authorfullhash}{c4df7241023127cc650d6cb0e52f20da}
+      \strng{authorfullhashraw}{c4df7241023127cc650d6cb0e52f20da}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{This database includes 25 long-term {ECG} recordings of human subjects with atrial fibrillation (mostly paroxysmal).}
+      \field{title}{{MIT}-{BIH} Atrial Fibrillation Database}
+      \field{year}{1992}
+      \field{dateera}{ce}
+      \verb{doi}
+      \verb 10.13026/C2MW2D
+      \endverb
+      \verb{urlraw}
+      \verb https://physionet.org/content/afdb/
+      \endverb
+      \verb{url}
+      \verb https://physionet.org/content/afdb/
+      \endverb
+    \endentry
+    \entry{Apellido2020}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=75c8438d77d5849593361c7f3ad493f8}{%
+           family={Apellido},
+           familyi={A\bibinitperiod},
+           given={Nombre},
+           giveni={N\bibinitperiod}}}%
+        {{hash=75c8438d77d5849593361c7f3ad493f8}{%
+           family={Apellido},
+           familyi={A\bibinitperiod},
+           given={Nombre},
+           giveni={N\bibinitperiod}}}%
+      }
+      \strng{namehash}{1cb67c9f70f415b0803c6263d36ccd97}
+      \strng{fullhash}{1cb67c9f70f415b0803c6263d36ccd97}
+      \strng{fullhashraw}{1cb67c9f70f415b0803c6263d36ccd97}
+      \strng{bibnamehash}{1cb67c9f70f415b0803c6263d36ccd97}
+      \strng{authorbibnamehash}{1cb67c9f70f415b0803c6263d36ccd97}
+      \strng{authornamehash}{1cb67c9f70f415b0803c6263d36ccd97}
+      \strng{authorfullhash}{1cb67c9f70f415b0803c6263d36ccd97}
+      \strng{authorfullhashraw}{1cb67c9f70f415b0803c6263d36ccd97}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Nombre de la Revista}
+      \field{number}{8}
+      \field{title}{Título del artículo}
+      \field{volume}{42}
+      \field{year}{2020}
+      \field{pages}{123\bibrangedash 145}
+      \range{pages}{23}
+      \verb{doi}
+      \verb 10.1234/ejemplo.2020.123456
+      \endverb
+    \endentry
+    \entry{Apellido2021}{inproceedings}{}{}
+      \name{author}{3}{}{%
+        {{hash=75c8438d77d5849593361c7f3ad493f8}{%
+           family={Apellido},
+           familyi={A\bibinitperiod},
+           given={Nombre},
+           giveni={N\bibinitperiod}}}%
+        {{hash=75c8438d77d5849593361c7f3ad493f8}{%
+           family={Apellido},
+           familyi={A\bibinitperiod},
+           given={Nombre},
+           giveni={N\bibinitperiod}}}%
+        {{hash=75c8438d77d5849593361c7f3ad493f8}{%
+           family={Apellido},
+           familyi={A\bibinitperiod},
+           given={Nombre},
+           giveni={N\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Ciudad, País}%
+      }
+      \list{publisher}{1}{%
+        {Editorial}%
+      }
+      \strng{namehash}{7ddb643e3ba88ec88cae981b9b733252}
+      \strng{fullhash}{e7203a885d64a2983d70c70ee61767be}
+      \strng{fullhashraw}{e7203a885d64a2983d70c70ee61767be}
+      \strng{bibnamehash}{e7203a885d64a2983d70c70ee61767be}
+      \strng{authorbibnamehash}{e7203a885d64a2983d70c70ee61767be}
+      \strng{authornamehash}{7ddb643e3ba88ec88cae981b9b733252}
+      \strng{authorfullhash}{e7203a885d64a2983d70c70ee61767be}
+      \strng{authorfullhashraw}{e7203a885d64a2983d70c70ee61767be}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Actas del Congreso Internacional}
+      \field{title}{Título de la contribución a congreso}
+      \field{year}{2021}
+      \field{pages}{100\bibrangedash 110}
+      \range{pages}{11}
+      \verb{doi}
+      \verb 10.1234/ejemplo.2021.654321
+      \endverb
+    \endentry
+    \entry{Apellido1997}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=75c8438d77d5849593361c7f3ad493f8}{%
+           family={Apellido},
+           familyi={A\bibinitperiod},
+           given={Nombre},
+           giveni={N\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Editorial}%
+      }
+      \strng{namehash}{75c8438d77d5849593361c7f3ad493f8}
+      \strng{fullhash}{75c8438d77d5849593361c7f3ad493f8}
+      \strng{fullhashraw}{75c8438d77d5849593361c7f3ad493f8}
+      \strng{bibnamehash}{75c8438d77d5849593361c7f3ad493f8}
+      \strng{authorbibnamehash}{75c8438d77d5849593361c7f3ad493f8}
+      \strng{authornamehash}{75c8438d77d5849593361c7f3ad493f8}
+      \strng{authorfullhash}{75c8438d77d5849593361c7f3ad493f8}
+      \strng{authorfullhashraw}{75c8438d77d5849593361c7f3ad493f8}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{edition}{3}
+      \field{isbn}{978-0123456789}
+      \field{title}{Título del libro}
+      \field{year}{1997}
+    \endentry
+    \entry{Organizacion2023}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=12cd4165b2fbfb93f3715139bef4e5a2}{%
+           family={{Nombre de la Organización}},
+           familyi={N\bibinitperiod}}}%
+      }
+      \list{organization}{1}{%
+        {Nombre de la Organización}%
+      }
+      \strng{namehash}{12cd4165b2fbfb93f3715139bef4e5a2}
+      \strng{fullhash}{12cd4165b2fbfb93f3715139bef4e5a2}
+      \strng{fullhashraw}{12cd4165b2fbfb93f3715139bef4e5a2}
+      \strng{bibnamehash}{12cd4165b2fbfb93f3715139bef4e5a2}
+      \strng{authorbibnamehash}{12cd4165b2fbfb93f3715139bef4e5a2}
+      \strng{authornamehash}{12cd4165b2fbfb93f3715139bef4e5a2}
+      \strng{authorfullhash}{12cd4165b2fbfb93f3715139bef4e5a2}
+      \strng{authorfullhashraw}{12cd4165b2fbfb93f3715139bef4e5a2}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Título del recurso en línea}
+      \field{urlday}{15}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.ejemplo.org/recurso
+      \endverb
+      \verb{url}
+      \verb https://www.ejemplo.org/recurso
+      \endverb
+    \endentry
+    \entry{Organismo2001}{report}{}{}
+      \name{author}{1}{}{%
+        {{hash=5cb64e623de96588b04fecedac6b31a4}{%
+           family={{Nombre del Organismo}},
+           familyi={N\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {Nombre de la Institución}%
+      }
+      \list{location}{1}{%
+        {Ciudad, País}%
+      }
+      \strng{namehash}{5cb64e623de96588b04fecedac6b31a4}
+      \strng{fullhash}{5cb64e623de96588b04fecedac6b31a4}
+      \strng{fullhashraw}{5cb64e623de96588b04fecedac6b31a4}
+      \strng{bibnamehash}{5cb64e623de96588b04fecedac6b31a4}
+      \strng{authorbibnamehash}{5cb64e623de96588b04fecedac6b31a4}
+      \strng{authornamehash}{5cb64e623de96588b04fecedac6b31a4}
+      \strng{authorfullhash}{5cb64e623de96588b04fecedac6b31a4}
+      \strng{authorfullhashraw}{5cb64e623de96588b04fecedac6b31a4}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Título del informe técnico}
+      \field{type}{Informe}
+      \field{year}{2001}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

@@ -5,24 +5,37 @@
 \chapter{Conclusiones}
 \label{chap:conclusiones}
 
-Este capítulo cierra la memoria del trabajo resumiendo las conclusiones principales y abriendo posibles líneas de trabajo futuras.
+A continuación, se presentan las conclusiones finales del proyecto planteando las futuras líneas de investigación.
 
-\section{Resumen del trabajo}
+\section{Resumen y aportaciones del proyecto}
 \label{sec:resumen_conclusiones}
-Resume el desarrollo y la ejecución general del proyecto.
+Las principales contribuciones incluyen:
+\begin{itemize}
+  \item La consolidación de cinco bases de datos heterogéneas
+  (\texttt{afpdb}, \texttt{cpsc2021}, \texttt{ltafdb}, \texttt{shdb-af} y \texttt{afdb})
+  en un único formato.
+  \item La prevención de filtrado de información (data leakage) aplicando una
+  separación de conjuntos de datos agrupando por paciente.
+  \item La comparación del rendimiento de modelos convolucionales tradicionales frente
+  a arquitecturas residuales avanzadas (SEResNet) con \textit{self-attention} de canales.
+\end{itemize}
 
 \section{Cumplimiento de objetivos}
 \label{sec:cumplimiento_objetivos}
-Discute en qué grado se han logrado los objetivos establecidos al inicio de la memoria (por ejemplo, haber adaptado con éxito el modelo para predecir PAF dentro de la ventana crítica de 5 minutos).
-
-\section{Aportaciones propias}
-\label{sec:aportaciones}
-Destaca las contribuciones principales de tu desarrollo, como la modularización de bases de datos de señales fisiológicas de múltiples fuentes o la robustez frente a data leakage.
+Se han alcanzado los objetivos iniciales planteados...
 
 \section{Valoración crítica y limitaciones}
 \label{sec:valoracion_critica}
-Realiza una valoración constructiva del trabajo, reconociendo limitaciones técnicas (por ejemplo, el tamaño del conjunto de datos o la variabilidad inter-sujeto en señales ECG).
+A pesar de la alta capacidad de clasificación, el problema presenta desafíos debido
+a la variabilidad de la señal ECG en diferentes pacientes y el ruido inherente a los
+dispositivos de registro ambulatorio.
 
-\section{Trabajos futuros}
-\label{sec:trabajos_futuros}
-Propone mejoras y extensiones viables (como la exploración de arquitecturas auto-supervisadas o el uso de redes recurrentes adicionales para correlación temporal a largo plazo).
+\section{Líneas futuras}
+\label{sec:lineas_futuras}
+Como extensiones naturales al trabajo realizado, se proponen las siguientes líneas
+de desarrollo futuro:
+\begin{itemize}
+  \item \textbf{Exploración de Modelos de Lenguaje para Señales (Signal Transformers):} Investigar arquitecturas avanzadas auto-supervisadas preentrenadas en grandes corpus de datos ECG.
+  \item \textbf{Optimización de Hyperparámetros en SEResNet:} Refinar el ratio de reducción en los bloques Squeeze-and-Excitation.
+  \item \textbf{Despliegue e integración clínica:} Probar el clasificador en sistemas integrados de monitoreo en tiempo real.
+\end{itemize}

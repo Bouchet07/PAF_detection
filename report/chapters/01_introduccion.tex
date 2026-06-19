@@ -5,20 +5,116 @@
 \chapter{Introducción}
 \label{chap:introduccion}
 
-Aquí puedes redactar la introducción general a tu trabajo. Explica brevemente el contexto, la motivación del proyecto y la importancia del problema que estás resolviendo (por ejemplo, la detección de episodios de Fibrilación Auricular Paroxística o PAF).
+La Fibrilación Auricular (FA) es la arritmia cardíaca más común, caracterizada por una
+activación eléctrica auricular caótica. Esta patología provoca una pérdida de la
+contracción auricular efectiva, que hace que incremente el riesgo de formación de trombos, ictus, insuficiencia
+cardíaca y deterioro cognitivo a largo plazo\ref{wikipedia_atrial_2026}.
 
-\section{Objetivo y alcance}
-\label{sec:objetivos}
-Define con claridad los objetivos generales y específicos de tu trabajo, así como el alcance (qué se incluye y qué queda fuera del proyecto).
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.7\textwidth]{img/atrial fibrilation.jpg}
+  \caption{Ejemplo de fibrilación auricular, obtenida de (mayo)[https://www.mayoclinic.org/diseases-conditions/atrial-fibrillation/symptoms-causes/syc-20350624]}
+  \label{fig:ejemplo}
+\end{figure}
 
-\section{Contexto del trabajo}
+Dentro de sus variantes, está la Fibrilación Auricular Paroxística (PAF, por sus siglas en
+inglés, \textit{Paroxysmal Atrial Fibrillation}). Se define por episodios arrítmicos
+que se inician de forma espontánea y que vuelven al ritmo sinusal en un periodo que suele
+ser menor a 7 días, aunque la mayoría lo hacen en menos de 24 horas.
+
+Debido a esta intermitencia, las monitorizaciones ECG de corta duración no suelen lograr
+capturar los episodios, haciendo de especial interés alguna herramienta de predicción temprana.
+
+Por ello la detección temprana, o en concreto, la predicción inminente de estos episodios,
+es decir, tener la capacidad de predecir si un paciente sufrirá un episodio en los próximos
+minutos a partir de su ritmo sinusal, es un área de investigación de especial interés.
+
+Predecir un episodio con una ventana de antelación de hasta 5 minutos proporcionaría
+una oportunidad terapéutica crucial, permitiendo alertar al paciente para que cese
+actividades de riesgo, automatizar la administración preventiva de fármacos
+antiarrítmicos o preparar dispositivos de estimulación eléctrica cardíaca adaptativa.
+
+Tener la capacidad de adelantarnos hasta 5 minutos a un episodio nos daría la capacidad
+de prevenir, o al menos reducir el riesgo, permitiendo alertar al paciente, para que pueda
+tomar medidas preventivas, como cesar actividades de riesgo o administrar fármacos antiarrítmicos.
+
+Sin embargo, la predicción es una tarea compleja. La fase previa al episodio es de ritmo sinusal,
+por lo que a simple vista no se observan patrones evidentes.
+
+Este trabajo aborda el problema de la predicción inminente
+de PAF mediante redes neuronales.
+Para garantizar la robustez clínica y la capacidad de generalización de las
+soluciones propuestas, se unifican cinco bases de datos
+heterogéneas, comparando cuatro arquitecturas de redes neuronales.
+
+\section{Contexto del Trabajo}
 \label{sec:contexto}
-Describe el entorno o contexto en el que se enmarca este proyecto (por ejemplo, en el ámbito de la investigación médica y procesamiento de señales ECG con Deep Learning).
 
-\section{Métodos, herramientas y estado del arte}
-\label{sec:estado_arte}
-Presenta brevemente las herramientas y tecnologías clave (PyTorch, ResNet1D, Python, etc.) y un resumen del estado del arte en este problema de predicción.
+Clásicamente, la predicción de episodios cardíacos se ha abordado mediante la extracción
+manual de parámetros de Variabilidad del Ritmo Cardíaco
+(HRV, \textit{Heart Rate Variability}) y la aplicación de clasificadores
+lineales. Si bien estas métricas ofrecen información valiosa del equilibrio del sistema
+nervioso autónomo sobre el nodo sinusal, son incapaces de capturar las distorsiones
+morfológicas locales de las ondas del ECG (como cambios finos en la onda P o en el
+intervalo PR) que a menudo preceden a la FA.
 
-\section{Estructura de la memoria}
-\label{sec:estructura}
-Describe brevemente la estructura del resto del documento (por ejemplo: el Capítulo~\ref{chap:metodologia} describe la metodología; el Capítulo~\ref{chap:desarrollo} detalla el desarrollo...).
+Estas ofrecen información valiosa sobre el sistema nervioso autónomo, pero son incapaces
+de capturar las sutiles distorsiones de las ondas (como cambios finos en la onda P o en el
+intervalo PR) que suelen preceder al episodio de fibrilación auricular.
+
+Las redes neuronales han revolucionado este campo, permitiendo
+a las redes convolucionales y de atención extraer representaciones directamente a
+partir de la señal de ECG cruda (\textit{end-to-end}). No obstante, la mayoría de
+los estudios del estado del arte presentan dos limitaciones críticas:
+\begin{enumerate}
+  \item \textbf{Sesgo de Base de Datos:} Se entrenan utilizando una única base
+  de datos. Esto genera modelos altamente sobreajustados a las condiciones de ruido y
+  hardware de esa base de datos concreta, que fracasan al ser validados en registros
+  independientes.
+  \item \textbf{Data Leakage y validaciones débiles:} Con frecuencia se comparten
+  ventanas del mismo paciente entre los conjuntos de entrenamiento y test,
+  reportando precisiones artificialmente altas pero clínicamente inutilizables.
+\end{enumerate}
+
+Este trabajo se enfoca en resolver estas limitaciones utilizando un dataset consolidado
+masivo multisujeto procedente de sensores hospitalarios de larga duración y dispositivos
+inteligentes, evaluando los modelos mediante una validación cruzada inter-sujeto estricta.
+
+Este trabajo aborda estas limitaciones, incorporando multiples bases de datos, y evaluando
+los modelos mediante una validación cruzada inter-sujeto estricta, asegurando que
+no se compartan ventanas del mismo paciente entre los conjuntos de entrenamiento y test.
+
+\section{Objetivos del Proyecto}
+\label{sec:objetivos}
+
+El objetivo de este proyecto es
+\textbf{diseñar, implementar y evaluar un sistema capaz de
+predecir de forma inminente (en una ventana de 5 minutos antes del inicio) episodios de
+Fibrilación Auricular Paroxística (PAF) a partir de segmentos de 10 segundos de señal ECG en
+ritmo sinusal}.
+
+Para alcanzar este fin, se definen los siguientes objetivos específicos:
+\begin{itemize}
+  \item \textbf{Objetivo 1:} 
+  Integrar cinco bases de datos heterogéneas de PhysioNet:
+  \textit{afpdb}, \textit{cpsc2021}, \textit{ltafdb}, \textit{shdb-af} y \textit{afdb}.
+  \item \textbf{Objetivo 2:} 
+  Desarrollar un pipeline de preprocesamiento que permita la
+  extracción de ventanas variables de ritmo sinusal Pre-PAF y de características
+  temporales y frecuenciales de HRV.
+  \item \textbf{Objetivo 3:} 
+  Entrenar cuatro arquitecturas de redes neuronales convolucionales
+  y secuenciales 1D: ResNet 1D (modelo base residual),
+  SEResNet 1D (con atención por canal Squeeze-and-Excitation),
+  un modelo CNN-Transformer (\textit{multi-head self attention})
+  y Mamba 1D (basado en \textit{state space models}).
+  \item \textbf{Objetivo 4:} 
+  Integrar la información de HRV mediante una cabeza clasificatoria
+  (Multi-Layer Perceptron) que potencie la toma de decisiones de
+  las redes.
+  \item \textbf{Objetivo 5:} 
+  Evaluar rigurosamente los modelos bajo un diseño GroupKFold para mitigar
+  la filtración de datos.
+\end{itemize}
+
+

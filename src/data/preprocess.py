@@ -12,6 +12,7 @@ from scipy.interpolate import interp1d
 TARGET_FS = 128
 WINDOW_PRE_PAF_SEC = 300  # 5-minute pre-onset window
 CHANNELS = 2
+MIN_PRE_PAF_SEC = 10  # Minimum required clean sinus rhythm duration in seconds before onset
 
 @dataclass
 class WindowMetadata:
@@ -303,29 +304,24 @@ def preprocess_wfdb_dataset(
             # --- 1. Label 1: Pre-PAF Window Extraction ---
             onset_idx = 0
             for start, end in afib_intervals:
-                if start < pre_paf_samples:
-                    continue  # Not enough data before onset
+                # Find the end of the previous AFIB episode
+                prev_afib_end = 0
+                for s, e in afib_intervals:
+                    if e < start:
+                        prev_afib_end = max(prev_afib_end, e)
 
-                # Check if there is any AFIB in the pre-onset window [start - pre_paf_samples, start)
-                window_start = start - pre_paf_samples
+                # The available clean sinus rhythm duration before this onset:
+                # limited by the start of signal (0) and max 5 minutes (pre_paf_samples)
+                window_start = max(prev_afib_end, start - pre_paf_samples)
                 window_end = start
 
-                has_afib_in_window = False
-                for a_start, a_end in afib_intervals:
-                    # Check overlap of AFIB with our 5-minute pre-onset window
-                    if max(a_start, window_start) < min(a_end, window_end):
-                        has_afib_in_window = True
-                        break
+                # Check if the clean segment is long enough
+                segment_len_sec = (window_end - window_start) / TARGET_FS
+                if segment_len_sec < MIN_PRE_PAF_SEC:
+                    continue  # Skip if it is too short to be useful
 
-                if has_afib_in_window:
-                    continue  # Discard if AFIB is present in the pre-onset window
-
-                # Extract and pad if needed
+                # Extract the segment
                 segment = signal[:, window_start:window_end]
-                if segment.shape[1] < pre_paf_samples:
-                    segment = np.pad(segment, ((0,0), (0, pre_paf_samples - segment.shape[1])), 'constant')
-                elif segment.shape[1] > pre_paf_samples:
-                    segment = segment[:, :pre_paf_samples]
 
                 # Convert segment bounds to original sampling rate space
                 start_orig = int(window_start / scale_factor)
