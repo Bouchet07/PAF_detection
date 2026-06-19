@@ -5,12 +5,24 @@
 \chapter{Resultados y Discusión}
 \label{chap:resultados}
 
-En este capítulo se presentan y discuten los resultados obtenidos por las cuatro arquitecturas de aprendizaje profundo implementadas (ResNet 1D, SEResNet 1D, el modelo híbrido CNN-Transformer y Mamba 1D). El entrenamiento y ajuste se han realizado mediante una estrategia de validación cruzada por grupos (5-Fold Group Cross-Validation) sobre el dataset consolidado y aumentado, asegurando que los registros de un mismo sujeto nunca se compartan entre los pliegues de entrenamiento y validación. Finalmente, la capacidad de generalización se evalúa sobre un conjunto de prueba (test) ciego independiente que abarca muestras de todas las bases de datos armonizadas, complementado con la evaluación en el conjunto de test oficial del PhysioNet Challenge.
+En este capítulo se presentan y discuten los resultados obtenidos por las cuatro
+arquitecturas implementadas (ResNet 1D, SEResNet 1D, el modelo
+híbrido CNN-Transformer y Mamba 1D). El entrenamiento y ajuste se han realizado mediante
+una estrategia de validación cruzada por grupos (5-Fold Group Cross-Validation),
+asegurando que los registros de un mismo sujeto
+nunca se compartan entre los \textit{folds} de entrenamiento y validación. Finalmente, la
+capacidad de generalización se evalúa sobre un conjunto de prueba (test)
+independiente que contiene muestras de todas las bases de datos,
+complementado con la evaluación en el conjunto de test oficial del PhysioNet Challenge.
 
 \section{Evaluación cuantitativa de los modelos}
 \label{sec:evaluacion_cuantitativa}
 
-El rendimiento de los modelos se evalúa a través de métricas estándar de clasificación binaria: exactitud global (Accuracy), precisión, sensibilidad (Recall) y la puntuación F1 (F1-score) tanto por clase como promedio (Macro F1). Los resultados cuantitativos obtenidos en la validación cruzada por grupos y en el conjunto de prueba independiente se detallan en la Tabla~\ref{tab:resultados_modelos}.
+El rendimiento de los modelos se evalúa a través de las métricas:
+exactitud global (Accuracy), precisión, sensibilidad (Recall) y la puntuación
+F1 (F1-score) tanto por clase como promedio (Macro F1). Los resultados cuantitativos
+obtenidos en la validación cruzada por grupos y en el conjunto de prueba independiente
+se detallan en la Tabla~\ref{tab:resultados_modelos}.
 
 \begin{table}[htbp]
   \centering
@@ -99,7 +111,7 @@ de la SENet 1D nos puede indicar que la atención específica a nivel de derivac
 estrategia más eficiente para lidiar con el ruido espacial e instrumental característico
 de las señales multicanal de ECG.
 
-\subsection{El fenómeno del desplazamiento de dominio (Domain Shift)}
+\subsection{Discrepancia entre el rendimiento en test general y el benchmark de PhysioNet}
 Un hallazgo clave de este trabajo es la discrepancia observada entre el rendimiento
 en el conjunto de prueba general y las puntuaciones en el reto oficial de PhysioNet
 (\texttt{afpdb}):
