@@ -5,15 +5,12 @@
 \chapter{Introducción}
 \label{chap:introduccion}
 
-La Fibrilación Auricular (FA) es la arritmia cardíaca más común, caracterizada por una
-activación eléctrica auricular caótica. Esta patología provoca una pérdida de la
-contracción auricular efectiva, que hace que incremente el riesgo de formación de trombos, ictus, insuficiencia
-cardíaca y deterioro cognitivo a largo plazo\ref{wikipedia_atrial_2026}.
+La Fibrilación Auricular (FA) es la arritmia cardíaca más común, caracterizada por una activación eléctrica auricular caótica (como se ilustra en la Figura~\ref{fig:ejemplo}). Esta patología provoca una pérdida de la contracción auricular efectiva, lo que incrementa el riesgo de formación de trombos, accidentes cerebrovasculares (ictus), insuficiencia cardíaca y deterioro cognitivo a largo plazo \cite{wikipedia_atrial_2026}.
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.7\textwidth]{img/atrial fibrilation.jpg}
-  \caption{Ejemplo de fibrilación auricular, obtenida de (mayo)[https://www.mayoclinic.org/diseases-conditions/atrial-fibrillation/symptoms-causes/syc-20350624]}
+  \caption{Ejemplo de ECG en fibrilación auricular. Imagen obtenida de la \href{https://www.mayoclinic.org/diseases-conditions/atrial-fibrillation/symptoms-causes/syc-20350624}{Mayo Clinic}.}
   \label{fig:ejemplo}
 \end{figure}
 
@@ -34,16 +31,11 @@ una oportunidad terapéutica crucial, permitiendo alertar al paciente para que c
 actividades de riesgo, automatizar la administración preventiva de fármacos
 antiarrítmicos o preparar dispositivos de estimulación eléctrica cardíaca adaptativa.
 
-Tener la capacidad de adelantarnos hasta 5 minutos a un episodio nos daría la capacidad
-de prevenir, o al menos reducir el riesgo, permitiendo alertar al paciente, para que pueda
-tomar medidas preventivas, como cesar actividades de riesgo o administrar fármacos antiarrítmicos.
-
-Sin embargo, la predicción es una tarea compleja. La fase previa al episodio es de ritmo sinusal,
-por lo que a simple vista no se observan patrones evidentes.
+Sin embargo, la predicción es una tarea compleja. La fase previa al episodio arrítmico se presenta en ritmo sinusal, por lo que a simple vista en el ECG no se observan patrones o anomalías morfológicas evidentes.
 
 Este trabajo aborda el problema de la predicción inminente
 de PAF mediante redes neuronales.
-Para garantizar la robustez clínica y la capacidad de generalización de las
+Para garantizar la capacidad de generalización de las
 soluciones propuestas, se unifican cinco bases de datos
 heterogéneas, comparando cuatro arquitecturas de redes neuronales.
 
@@ -57,10 +49,6 @@ lineales. Si bien estas métricas ofrecen información valiosa del equilibrio de
 nervioso autónomo sobre el nodo sinusal, son incapaces de capturar las distorsiones
 morfológicas locales de las ondas del ECG (como cambios finos en la onda P o en el
 intervalo PR) que a menudo preceden a la FA.
-
-Estas ofrecen información valiosa sobre el sistema nervioso autónomo, pero son incapaces
-de capturar las sutiles distorsiones de las ondas (como cambios finos en la onda P o en el
-intervalo PR) que suelen preceder al episodio de fibrilación auricular.
 
 Las redes neuronales han revolucionado este campo, permitiendo
 a las redes convolucionales y de atención extraer representaciones directamente a
@@ -80,9 +68,7 @@ Este trabajo se enfoca en resolver estas limitaciones utilizando un dataset cons
 masivo multisujeto procedente de sensores hospitalarios de larga duración y dispositivos
 inteligentes, evaluando los modelos mediante una validación cruzada inter-sujeto estricta.
 
-Este trabajo aborda estas limitaciones, incorporando multiples bases de datos, y evaluando
-los modelos mediante una validación cruzada inter-sujeto estricta, asegurando que
-no se compartan ventanas del mismo paciente entre los conjuntos de entrenamiento y test.
+
 
 \section{Objetivos del Proyecto}
 \label{sec:objetivos}

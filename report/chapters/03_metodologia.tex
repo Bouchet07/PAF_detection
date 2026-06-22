@@ -150,6 +150,13 @@ activación ReLU y una \textit{skip connection} que suma la entrada
 original a la salida del bloque, facilitando el flujo del gradiente en arquitecturas
 profundas.
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1\textwidth]{img/resnet.pdf}
+  \caption{Arquitectura base ResNet 1D. La red procesa la entrada reduciendo progresivamente la dimensión temporal mediante bloques residuales, integrando finalmente las características HRV antes del clasificador \textit{fully connected}.}
+  \label{fig:resnet}
+\end{figure}
+
 \subsection{SEResNet 1D (Atención de Canales)}
 Añade bloques \textit{Squeeze-and-Excitation} (SE) tras cada bloque residual.
 El bloque SE comprime la información espacial del canal mediante un
@@ -157,6 +164,15 @@ El bloque SE comprime la información espacial del canal mediante un
 con cuello de botella, calcula un peso de excitación para cada canal.
 Esto permite a la red ponderar la importancia relativa de cada una de las dos
 derivaciones del ECG de forma dinámica.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1\textwidth]{img/seresnet.pdf}
+  \caption{Arquitectura SEResNet 1D. Tras cada bloque residual se incorpora un módulo
+  Squeeze-and-Excitation
+  que recalibra adaptativamente los pesos de los canales de extracción de características.}
+  \label{fig:seresnet}
+\end{figure}
 
 \subsection{CNN-Transformer Híbrido}
 Combina las fortalezas de las redes convolucionales y los mecanismos de atención.
@@ -166,6 +182,16 @@ la secuencia resultante. Utilizando mecanismos de \textit{Multi-Head Self-Attent
 el Transformer captura relaciones de largo alcance
 y dependencias temporales complejas a lo largo de todo el segmento de ECG.
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1\textwidth]{img/transformer.pdf}
+  \caption{Arquitectura híbrida CNN-Transformer. Se utiliza un \textit{frontend}
+  convolucional para la extracción local y reducción de dimensionalidad, seguido de
+  codificadores posicionales y un \textit{Transformer Encoder}
+  para la atención global.}
+  \label{fig:transformer}
+\end{figure}
+
 \subsection{Mamba 1D (Modelo de Espacio de Estados)}
 Como alternativa al Transformer, se implementa una arquitectura
 basada en \textit{State space models} (SSM) de selección variable (Mamba).
@@ -173,6 +199,16 @@ Mamba parametriza un sistema lineal invariante en el tiempo que procesa la seña
 de una recurrencia lineal selectiva y dependiente de los datos. Esto permite capturar
 dependencias de largo alcance con una complejidad computacional que escala linealmente
 $O(L)$ en lugar de cuadrática $O(L^2)$ como ocurre con en el Transformer.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1\textwidth]{img/mamba.pdf}
+  \caption{Arquitectura híbrida CNN-Mamba. La secuencia latente generada por el
+  \textit{frontend} convolucional es procesada de forma puramente secuencial mediante
+  bloques SSM selectivos, prescindiendo de codificadores
+  posicionales.}
+  \label{fig:mamba}
+\end{figure}
 
 \subsection{Integración de Características HRV}
 Adicionalmente, las nueve variables normalizadas de HRV se introducen en un perceptrón multicapa

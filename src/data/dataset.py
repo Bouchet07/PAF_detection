@@ -23,7 +23,8 @@ class PAFDataset(Dataset):
         in_memory: bool = True,
         augment: bool = False,
         hrv_mean: np.ndarray = None,
-        hrv_std: np.ndarray = None
+        hrv_std: np.ndarray = None,
+        signals: dict = None
     ):
         self.metadata = metadata.reset_index(drop=True)
         self.data_dir = data_dir
@@ -46,8 +47,8 @@ class PAFDataset(Dataset):
             
         self.hrv_features = (raw_hrv - self.hrv_mean) / self.hrv_std
         
-        self.signals = {}
-        if self.in_memory:
+        self.signals = signals if signals is not None else {}
+        if self.in_memory and not signals:
             print(f"Loading {len(metadata)} segments into RAM for {mode}...")
             for _, row in metadata.iterrows():
                 file_path = os.path.join(self.data_dir, row['filename'])

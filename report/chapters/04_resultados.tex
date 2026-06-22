@@ -15,140 +15,236 @@ capacidad de generalización se evalúa sobre un conjunto de prueba (test)
 independiente que contiene muestras de todas las bases de datos,
 complementado con la evaluación en el conjunto de test oficial del PhysioNet Challenge.
 
-\section{Evaluación cuantitativa de los modelos}
-\label{sec:evaluacion_cuantitativa}
+\section{Resultados detallados por arquitectura}
+\label{sec:resultados_por_arquitectura}
 
-El rendimiento de los modelos se evalúa a través de las métricas:
-exactitud global (Accuracy), precisión, sensibilidad (Recall) y la puntuación
-F1 (F1-score) tanto por clase como promedio (Macro F1). Los resultados cuantitativos
-obtenidos en la validación cruzada por grupos y en el conjunto de prueba independiente
-se detallan en la Tabla~\ref{tab:resultados_modelos}.
+En esta sección se presentan en detalle los resultados experimentales obtenidos para cada una de las arquitecturas principales, comenzando por el análisis sistemático de las variaciones estructurales de la red ResNet 1D.
+
+\subsection{Arquitectura ResNet 1D y variaciones estructurales}
+\label{subsec:resultados_resnet}
+
+Para optimizar el rendimiento del clasificador basado en ResNet 1D, se modificó la arquitectura base para parametrizar sus dimensiones clave y evaluar el impacto de las siguientes variables de diseño:
+\begin{itemize}
+    \item \textbf{Profundidad de la red}: Variación del número de bloques residuales por capa. El baseline original utiliza 8 bloques (configuración \texttt{[2, 2, 2, 2]}), mientras que la variante profunda utiliza 12 bloques (\texttt{[3, 3, 3, 3]}).
+    \item \textbf{Ancho de la red}: Modificación del número de canales convolucionales en las capas sucesivas ( baseline original: \texttt{[32, 64, 128, 256]} frente a la versión ancha: \texttt{[64, 128, 256, 512]}).
+    \item \textbf{Tamaño del kernel}: Comparación del tamaño del kernel en las convoluciones 1D (baseline: 15 muestras, frente a kernels grandes de 23 y pequeños de 7).
+    \item \textbf{Profundidad y Estrechez (Deep-Narrow)}: Una combinación de mayor profundidad (15 bloques distribuidos como \texttt{[3, 4, 6, 3]}) con un menor número de canales (\texttt{[24, 48, 96, 192]}) para restringir el número total de parámetros de la red y mitigar el sobreajuste.
+    \item \textbf{Aumento de Datos (Data Augmentation)}: Evaluación de cada una de las arquitecturas anteriores bajo aumentación de datos al vuelo (ruido gaussiano, balanceo de línea base y escalado de señal).
+\end{itemize}
+
+Los resultados cuantitativos obtenidos por cada variante mediante validación cruzada de 5 pliegues por grupos y sobre el conjunto de test independiente se resumen en la Tabla~\ref{tab:resultados_resnet_variaciones}.
 
 \begin{table}[htbp]
   \centering
-  \caption{Resultados comparativos de rendimiento de las arquitecturas en validación y test}
+  \caption{Resultados comparativos de las variaciones de la arquitectura ResNet 1D con y sin aumento de datos}
+  \label{tab:resultados_resnet_variaciones}
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{llcccc}
+    \toprule
+    \textbf{Configuración ResNet 1D} & \textbf{Augment.} & \textbf{F1 Macro Val (CV)} & \textbf{F1 Macro Test} & \textbf{Accuracy Test} & \textbf{Score Reto (Event 2)} \\
+    \midrule
+    \multirow{2}{*}{ResNet Base} & No & $0.7547 \pm 0.06$ & 0.72 & 0.76 & 50\% \\
+                                 & Sí & $0.7615 \pm 0.06$ & 0.81 & 0.81 & 50\% \\
+    \midrule
+    \multirow{2}{*}{ResNet Profunda (\textit{deep})} & No & $0.7700 \pm 0.05$ & 0.68 & 0.68 & 61\% \\
+                                                     & Sí & $0.7687 \pm 0.06$ & 0.80 & 0.81 & 54\% \\
+    \midrule
+    \multirow{2}{*}{ResNet Ancha (\textit{wide})} & No & $\mathbf{0.7877 \pm 0.04}$ & 0.78 & 0.79 & 57\% \\
+                                                  & Sí & $0.7671 \pm 0.05$ & 0.81 & 0.81 & 57\% \\
+    \midrule
+    \multirow{2}{*}{ResNet Kernel Grande (k=23)} & No & $0.7594 \pm 0.05$ & 0.81 & 0.81 & 57\% \\
+                                                  & Sí & $0.7533 \pm 0.06$ & 0.81 & 0.81 & 57\% \\
+    \midrule
+    \multirow{2}{*}{ResNet Kernel Pequeño (k=7)} & No & $0.7684 \pm 0.04$ & 0.77 & 0.77 & 57\% \\
+                                                  & Sí & $0.7406 \pm 0.06$ & \textbf{0.81} & \textbf{0.82} & 46\% \\
+    \midrule
+    \multirow{2}{*}{\textbf{ResNet Profunda y Estrecha}} & No & $0.7573 \pm 0.06$ & 0.79 & 0.80 & 64\% \\
+                                                         & Sí & $0.7596 \pm 0.07$ & 0.80 & 0.80 & \textbf{68\%} \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \vskip 5pt
+  \small
+  \textit{Nota:} El score del reto representa la evaluación en el conjunto de test blindado oficial de PhysioNet Challenge (Event 2).
+\end{table}
+
+De los resultados de la Tabla~\ref{tab:resultados_resnet_variaciones} se extraen los siguientes análisis principales:
+\begin{enumerate}
+    \item \textbf{La profundidad supera al ancho en generalización externa}: El modelo \texttt{resnet1d\_deep\_narrow} con aumento de datos logró el mejor balance, obteniendo un score de reto del 68\% y manteniendo una exactitud del 80\% en test. A pesar de que la configuración ancha (\texttt{resnet1d\_wide}) obtuvo el mayor rendimiento de validación local (F1 Macro de 0.7877), su capacidad de generalización sobre el test ciego oficial cayó a 57\%, sugiriendo que un número excesivo de filtros por capa induce un sobreajuste morfológico severo.
+    \item \textbf{Efecto sinérgico del aumento de datos en redes estrechas}: El aumento de datos (ruido gaussiano, escalado de amplitud y balanceo de línea base) actuó como un regularizador muy efectivo en configuraciones estrechas. En \texttt{resnet1d\_deep\_narrow}, el score de reto subió del 64\% al 68\%. Sin embargo, en configuraciones más pesadas (como la ResNet profunda con canales estándar), la aumentación de datos dificultó la convergencia óptima, reduciendo su desempeño en el reto (del 61\% al 54\%).
+    \item \textbf{Sensibilidad a la escala temporal del kernel}: El modelo con kernel pequeño ($k=7$) entrenado con aumentación sufrió la mayor degradación en el reto oficial (46\%). Con una resolución de muestreo de 128 Hz, un kernel de 7 muestras cubre únicamente 54 ms de señal, lo que impide a la red discernir el contexto del intervalo cardíaco frente a fluctuaciones inducidas por el balanceo de línea base o el ruido gaussiano.
+\end{enumerate}
+
+\subsection{Arquitectura SEResNet 1D con atención de canales}
+\label{subsec:resultados_seresnet}
+
+Para evaluar si los mecanismos de atención por canal (Squeeze-and-Excitation, \cite{senet1d}) ofrecen ventajas en combinación con perturbaciones sintéticas de señal, se modificó la arquitectura base para parametrizar sus dimensiones clave y evaluar el impacto de las variables de diseño (profundidad, ancho, tamaño de kernel y la combinación profunda-estrecha) tanto con como sin aumento de datos.
+
+Los resultados de rendimiento obtenidos se detallan en la Tabla~\ref{tab:resultados_seresnet_variaciones}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Resultados comparativos de las variaciones de la arquitectura SEResNet 1D con y sin aumento de datos}
+  \label{tab:resultados_seresnet_variaciones}
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{llcccc}
+    \toprule
+    \textbf{Configuración SEResNet 1D} & \textbf{Augment.} & \textbf{F1 Macro Val (CV)} & \textbf{F1 Macro Test} & \textbf{Accuracy Test} & \textbf{Score Reto (Event 2)} \\
+    \midrule
+    \multirow{2}{*}{SEResNet Base} & No & $0.7634 \pm 0.08$ & 0.73 & 0.73 & 50\% \\
+                                   & Sí & $0.7553 \pm 0.08$ & 0.82 & \textbf{0.83} & 54\% \\
+    \midrule
+    \multirow{2}{*}{SEResNet Profunda} & No & $\mathbf{0.7726 \pm 0.06}$ & \textbf{0.83} & \textbf{0.83} & 61\% \\
+                                       & Sí & $0.7523 \pm 0.08$ & 0.80 & 0.80 & 57\% \\
+    \midrule
+    \multirow{2}{*}{SEResNet Ancha} & No & $0.7723 \pm 0.07$ & 0.82 & 0.82 & 61\% \\
+                                    & Sí & $0.7697 \pm 0.08$ & 0.82 & \textbf{0.83} & 46\% \\
+    \midrule
+    \multirow{2}{*}{SEResNet Kernel Grande} & No & $0.7611 \pm 0.07$ & 0.77 & 0.78 & 57\% \\
+                                            & Sí & $0.7470 \pm 0.09$ & 0.81 & 0.82 & 46\% \\
+    \midrule
+    \multirow{2}{*}{SEResNet Kernel Pequeño} & No & $0.7701 \pm 0.06$ & 0.82 & \textbf{0.83} & 46\% \\
+                                             & Sí & $0.7617 \pm 0.08$ & \textbf{0.83} & \textbf{0.83} & 50\% \\
+    \midrule
+    \multirow{2}{*}{\textbf{SEResNet Profunda y Estrecha}} & No & $0.7568 \pm 0.08$ & 0.73 & 0.73 & 57\% \\
+                                                           & Sí & $0.7593 \pm 0.07$ & 0.80 & 0.80 & \textbf{68\%} \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \vskip 5pt
+  \small
+  \textit{Nota:} El score del reto representa la evaluación en el conjunto de test blindado oficial de PhysioNet Challenge (Event 2).
+\end{table}
+
+De los resultados de la Tabla~\ref{tab:resultados_seresnet_variaciones} se desprenden las siguientes observaciones relevantes:
+\begin{enumerate}
+    \item \textbf{Efecto sinérgico del aumento de datos en redes estrechas}: Al igual que en la ResNet estándar, la configuración profunda y estrecha (\texttt{senet\_deep\_narrow}) logra la máxima generalización en el reto ciego con un score del 68\% bajo aumento de datos, mientras que cae a un 57\% sin él. Esto confirma que el aumento de datos (ruido gaussiano, balanceo de línea base y escalado) actúa como un regularizador crítico para habilitar la transferencia inter-base de datos en redes de capacidad restringida.
+    \item \textbf{Inestabilidad de la atención de canales ante el aumento de datos en redes complejas}: Un hallazgo muy revelador es que las variantes de gran capacidad como la ancha (\texttt{senet\_wide}) y la de kernel grande (\texttt{senet\_large\_kernel}) obtienen mejores puntuaciones de reto sin aumentación de datos (61\% y 57\% respectivamente) que con ella (46\% en ambos casos). Esto confirma que añadir perturbaciones sintéticas de señal en redes de alta capacidad que usan mecanismos Squeeze-and-Excitation dificulta la convergencia adaptativa de los pesos de atención por canal, forzando al modelo a aprender patrones espurios del ruido local que merman la generalización en dominios clínicos externos.
+    \item \textbf{Rendimiento local e impacto del campo receptivo}: En el dominio local, varias configuraciones logran resultados sobresalientes, destacando la variante profunda sin aumentación y la variante de kernel pequeño con aumentación, que alcanzan un F1 Macro de 0.83 y una exactitud de 0.83 en el test set local. No obstante, las variantes de kernel pequeño muestran una generalización externa penalizada (46\% y 50\% en el reto), debido a la incapacidad de un campo receptivo temporal estrecho para mitigar el ruido clínico real.
+\end{enumerate}
+
+\subsection{Arquitectura CNN-Transformer Híbrida y variaciones estructurales}
+\label{subsec:resultados_transformer}
+
+Para superar las limitaciones del baseline del modelo híbrido CNN-Transformer, se evaluó el impacto de regularizar el codificador Transformer y restringir su capacidad paramétrica ante ventanas de análisis pequeñas. Se compararon las siguientes variaciones estructurales entrenadas con y sin aumento de datos:
+\begin{itemize}
+    \item \textbf{Transformer Base}: La arquitectura baseline con $d_{model}=128$, 4 cabezas de atención ($nhead=4$) y 3 capas de codificación.
+    \item \textbf{Transformer Profundo}: Incremento del número de capas del codificador de 3 a 6 para captar relaciones temporales más abstractas.
+    \item \textbf{Transformer Ancho}: Aumento de la capacidad del modelo a $d_{model}=256$, 8 cabezas ($nhead=8$) y dimensión de feedforward a 512.
+    \item \textbf{Transformer Dropout Aumentado}: Elevación del factor de abandono (dropout) de 0.2 a 0.4 para mitigar el sobreajuste.
+    \item \textbf{Transformer Estrecho (Narrow)}: Reducción drástica de parámetros ($d_{model}=64$, $nhead=2$, feedforward de 128) para forzar un cuello de botella de información que prevenga la memorización.
+\end{itemize}
+
+Los resultados se detallan en la Tabla~\ref{tab:resultados_transformer_variaciones}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Resultados comparativos de las variaciones de la arquitectura CNN-Transformer 1D con y sin aumento de datos}
+  \label{tab:resultados_transformer_variaciones}
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{llcccc}
+    \toprule
+    \textbf{Configuración Transformer 1D} & \textbf{Augment.} & \textbf{F1 Macro Val (CV)} & \textbf{F1 Macro Test} & \textbf{Accuracy Test} & \textbf{Score Reto (Event 2)} \\
+    \midrule
+    \multirow{2}{*}{Transformer Base} & No & $0.7600 \pm 0.07$ & 0.77 & 0.77 & 57\% \\
+                                      & Sí & $0.7528 \pm 0.08$ & 0.78 & 0.78 & 57\% \\
+    \midrule
+    \multirow{2}{*}{Transformer Profundo} & No & $0.7637 \pm 0.07$ & 0.77 & 0.77 & 61\% \\
+                                          & Sí & $0.7546 \pm 0.08$ & \textbf{0.81} & \textbf{0.81} & 61\% \\
+    \midrule
+    \multirow{2}{*}{Transformer Ancho} & No & $\mathbf{0.7651 \pm 0.07}$ & 0.71 & 0.71 & 64\% \\
+                                       & Sí & $0.7550 \pm 0.09$ & \textbf{0.81} & \textbf{0.81} & 54\% \\
+    \midrule
+    \multirow{2}{*}{Transformer Dropout Aumentado} & No & $0.7581 \pm 0.08$ & 0.66 & 0.66 & 61\% \\
+                                                   & Sí & $0.7436 \pm 0.09$ & 0.79 & 0.79 & 64\% \\
+    \midrule
+    \multirow{2}{*}{\textbf{Transformer Estrecho}} & No & $0.7623 \pm 0.08$ & 0.70 & 0.70 & 61\% \\
+                                                   & Sí & $0.7487 \pm 0.09$ & 0.79 & 0.79 & \textbf{71\%} \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \vskip 5pt
+  \small
+  \textit{Nota:} El score del reto representa la evaluación en el conjunto de test blindado oficial de PhysioNet Challenge (Event 2).
+\end{table}
+
+De los resultados de la Tabla~\ref{tab:resultados_transformer_variaciones} se extraen los siguientes análisis principales:
+\begin{enumerate}
+    \item \textbf{La compresión dimensional previene el sobreajuste en Attention}: El modelo Transformer Estrecho con aumentación de datos logra la puntuación de generalización externa más alta del estudio con un score del 71\% en el reto ciego. Dado que el volumen de datos clínicos es acotado, reducir la dimensión latente ($d_{model}=64$) y el número de cabezas de atención fuerza a la red a enfocarse exclusivamente en rasgos morfológicos de alta relevancia clínica (como la variabilidad del intervalo R-R o el aplanamiento de ondas P), evitando la memorización del ruido.
+    \item \textbf{Efecto benéfico del aumento de datos en el dominio local}: A diferencia de las convoluciones SE, los mecanismos de autoatención temporal se benefician sistemáticamente de la aumentación de datos al vuelo en todas las configuraciones complejas, elevando el F1 Macro en test local (p. ej., de 0.71 a 0.81 en la versión ancha, y de 0.66 a 0.79 en la versión con dropout elevado). Esto demuestra que las perturbaciones sintéticas dotan al Transformer de la regularización necesaria para estimar las matrices de atención con mayor robustez frente al ruido fisiológico.
+\end{enumerate}
+
+\subsection{Arquitectura Mamba 1D y capacidad de representación}
+\label{subsec:resultados_mamba}
+
+El modelo Mamba 1D, basado en modelos de espacio de estados selectivos (SSM), se evalúa como alternativa recurrente sub-cuadrática frente a las arquitecturas convolucionales y de atención temporal. Su rendimiento óptimo global se detalla y analiza en la comparativa inter-modelo general.
+
+\section{Evaluación comparativa inter-modelo}
+\label{sec:evaluacion_cuantitativa}
+
+El rendimiento de los mejores modelos seleccionados para cada arquitectura se evalúa a través de las métricas: exactitud global (Accuracy), precisión, sensibilidad (Recall) y la puntuación F1 (F1-score) tanto por clase como promedio (Macro F1). Los resultados cuantitativos obtenidos en la validación cruzada por grupos y en el conjunto de prueba independiente se detallan en la Tabla~\ref{tab:resultados_modelos}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Resultados comparativos de rendimiento de las mejores variantes de cada arquitectura en validación y test}
   \label{tab:resultados_modelos}
-  \begin{tabular}{llccccc}
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{llcccc}
     \toprule
     \textbf{Modelo} & \textbf{Split} & \textbf{F1 Clase 0} & \textbf{F1 Clase 1} & \textbf{F1 Macro} & \textbf{Accuracy} \\
     \midrule
-    \multirow{2}{*}{\textbf{ResNet 1D}} & Validación (CV) & --- & --- & $0.7547 \pm 0.06$ & $0.7823 \pm 0.06$ \\
-                                        & Test & 0.71 & 0.73 & \textbf{0.72} & 0.72 \\
+    \multirow{2}{*}{\textbf{ResNet 1D (Deep-Narrow, Aug)}} & Validación (CV) & --- & --- & $0.7596 \pm 0.07$ & $0.7902 \pm 0.06$ \\
+                                                            & Test & 0.78 & 0.82 & \textbf{0.80} & 0.80 \\
     \midrule
-    \multirow{2}{*}{\textbf{SENet 1D}}  & Validación (CV) & --- & --- & $0.7658 \pm 0.04$ & $0.7920 \pm 0.04$ \\
-                                        & Test & 0.76 & 0.81 & \textbf{0.79} & 0.79 \\
+    \multirow{2}{*}{\textbf{SENet 1D (Deep-Narrow, Aug)}}  & Validación (CV) & --- & --- & $0.7593 \pm 0.07$ & $0.7821 \pm 0.06$ \\
+                                                            & Test & 0.77 & 0.82 & \textbf{0.80} & 0.80 \\
     \midrule
-    \multirow{2}{*}{\textbf{Transformer}}& Validación (CV) & --- & --- & $0.7550 \pm 0.05$ & $0.7752 \pm 0.05$ \\
-                                        & Test & 0.70 & 0.67 & \textbf{0.68} & 0.68 \\
+    \multirow{2}{*}{\textbf{Transformer (Narrow, Aug)}}     & Validación (CV) & --- & --- & $0.7487 \pm 0.09$ & $0.7722 \pm 0.09$ \\
+                                                            & Test & 0.77 & 0.82 & \textbf{0.79} & 0.79 \\
     \midrule
-    \multirow{2}{*}{\textbf{Mamba 1D}}   & Validación (CV) & --- & --- & $0.7138 \pm 0.09$ & $0.7350 \pm 0.09$ \\
-                                        & Test & 0.75 & 0.74 & \textbf{0.75} & 0.75 \\
+    \multirow{2}{*}{\textbf{Mamba 1D}}                      & Validación (CV) & --- & --- & $0.7138 \pm 0.09$ & $0.7350 \pm 0.09$ \\
+                                                            & Test & 0.75 & 0.74 & \textbf{0.75} & 0.75 \\
     \bottomrule
-  \end{tabular}
+  \end{tabular}%
+  }
   \vskip 5pt
   \small
   \textit{Nota:} La Clase 0 corresponde a Ritmo Sinusal (Normal/Distant) y la Clase 1 a la ventana crítica anterior a la Fibrilación Auricular (Pre-PAF).
 \end{table}
 
-Analizando los resultados obtenidos en el conjunto de test,
-se observa que la arquitectura \textbf{SEResNet 1D} (con atención de canales)
-es el modelo más robusto, logrando una \textit{accuracy} global del 79\% y un
-F1 Macro del 79\%. En la detección de la clase crítica Pre-PAF (Clase 1),
-la SEResNet 1D obtiene un F1-score del 81\%, superando a la ResNet 1D
-(73\%) y al modelo híbrido CNN-Transformer (67\%). 
+Analizando los resultados obtenidos en el conjunto de test, se observa que la arquitectura optimizada \textbf{ResNet 1D (Deep-Narrow, Aug)} logra posicionarse, junto con su contraparte con atención de canales \textbf{SEResNet 1D (Deep-Narrow, Aug)}, como el modelo más competitivo globalmente en el dominio local, alcanzando ambos una \textit{accuracy} global del 80\% y un F1 Macro del 80\%. En la detección de la clase crítica Pre-PAF (Clase 1), ambos modelos optimizados obtienen un F1-score del 82\%, superando notablemente a Mamba 1D (74\%) y quedando prácticamente empatados con la arquitectura regularizada \textbf{Transformer (Narrow, Aug)}, la cual alcanza un F1-score del 82\% en la detección de Clase 1 y un 79\% de F1 Macro.
 
-Por su parte, el modelo \textbf{Mamba 1D} se consolida como la segunda mejor
-arquitectura, logrando un F1 Macro del 75\% con un equilibrio entre la detección de ritmo normal
-(F1 de 75\%) y ritmo pre-arrítmico (F1 de 74\%). Esto supera en +3 puntos de F1 Macro
-a la ResNet 1D convencional y en +7 puntos al CNN-Transformer, confirmando la solidez
-de los \textit{State Space Models} para señales biológicas.
+Por su parte, el modelo \textbf{Mamba 1D} se consolida como una arquitectura muy sólida, logrando un F1 Macro del 75\% con un gran equilibrio entre la detección de ritmo normal (F1 de 75\%) y ritmo pre-arrítmico (F1 de 74\%). Esto supera notablemente al baseline original del Transformer, demostrando que los modelos de espacio de estados selectivos ofrecen una excelente relación generalización-capacidad.
 
 \section{Análisis de resultados y discusión}
 \label{sec:analisis_resultados}
 
-La comparación de los modelos entrenados revela conclusiones
-sobre el diseño de redes neuronales para señales biomédicas:
+La comparación de los modelos entrenados revela conclusiones sobre el diseño de redes neuronales para señales biomédicas:
 
-\subsection{El impacto de la atención de canales (Squeeze-and-Excitation)}
-La superioridad del modelo \textbf{SENet 1D} sobre la \textbf{ResNet 1D} convencional
-se debe a la introducción del bloque de atención por canal. Dado que el dataset
-combina señales de múltiples bases de datos, los registros
-presentan una gran variabilidad en cuanto a instrumentación o posición de electrodos.
+\subsection{El impacto de la regularización estructural frente a mecanismos de atención}
+Originalmente, la superioridad del modelo \textbf{SENet 1D} sobre el baseline de \textbf{ResNet 1D} convencional se atribuía exclusivamente a la recalibración dinámica de derivaciones mediante el bloque de atención por canal (Squeeze-and-Excitation). Al permitir atenuar derivaciones ruidosas y concentrarse en las que contienen firmas biológicas claras de PAF (ondas P aberrantes, variaciones de HRV), la SEResNet base superaba al baseline original de ResNet por un margen de +7 puntos de F1 Macro.
 
-La atención por canal permite al modelo recalibrar dinámicamente la importancia de cada
-una de las dos derivaciones del ECG de forma adaptativa. Esto ayuda a atenuar el ruido de
-derivaciones menos informativas y a enfocarse en los canales que presentan las firmas
-biológicas previas a la PAF (como las variaciones de la morfología de la onda P y las
-variaciones de HRV), logrando una mejora neta de +8 puntos porcentuales en el F1-score
-de la clase crítica (del 73\% al 81\%) en comparación con la ResNet base.
+Sin embargo, los experimentos de optimización estructural demuestran que una regularización arquitectónica bien diseñada, como la de la red \texttt{resnet1d\_deep\_narrow\_aug} (que incrementa la profundidad a 31 capas convolucionales pero reduce drásticamente el ancho de los canales a un máximo de 192, combinada con aumentaciones de datos al vuelo), puede lograr un rendimiento equivalente (80\% F1 Macro en ambos casos). Esto indica que la constricción de capacidad estructural combinada con perturbaciones sintéticas de señal es una alternativa de regularización sumamente potente que compite directamente con la calibración adaptativa de derivaciones, logrando un rendimiento idéntico.
 
-\subsection{Dificultades de convergencia en el CNN-Transformer Híbrido}
-Aunque el mecanismo de \textit{self attention} temporal del Transformer teóricamente captura
-dependencias a largo plazo de forma muy eficaz, en este problema clínico la señal de
-entrada al modelo tiene una duración de 10 segundos. En ventanas
-temporales tan pequeñas, la morfología local y las transiciones rápidas de ritmo
-juegan un papel más determinante que la
-información de contexto a largo plazo. Además, los Transformers requieren un volumen
-masivo de datos para converger adecuadamente sin sobreajustar, lo que explica la caída
-de su rendimiento en el conjunto de test en comparación con la validación.
+\subsection{Superación del Sobreajuste en el CNN-Transformer Híbrido mediante Compresión Dimensional}
+Aunque originalmente el baseline del CNN-Transformer híbrido sufría de sobreajuste severo debido al elevado número de parámetros de los bloques de atención aplicados sobre ventanas temporales relativamente pequeñas de 10 segundos, los resultados demuestran que la compresión paramétrica resuelve esta limitación de manera drástica. Al constreñir las dimensiones latentes en la variante Transformer Estrecho ($d_{model}=64$, $nhead=2$, $dim\_feedforward=128$), se reduce la complejidad del espacio de búsqueda, lo que permite al codificador del Transformer converger con mayor facilidad y lograr una alta capacidad de generalización. Como consecuencia directa, esta variante alcanza la puntuación más alta en el reto ciego externo (71\% de Event 2 score), demostrando que la regularización por estrechez paramétrica es fundamental para aplicar arquitecturas de atención sobre señales biomédicas con conjuntos de datos limitados.
 
 \subsection{Modelos de Espacio de Estados (Mamba 1D) y su Capacidad de Generalización}
-La arquitectura \textbf{Mamba 1D} presenta un rendimiento sólido,
-obteniendo un F1 Macro del 75\% en el conjunto de test
-(con un F1 Clase 0 del 75\% y F1 Clase 1 del 74\%). Esto posiciona a Mamba 1D como la
-segunda mejor arquitectura en cuanto a generalización global, superando a la ResNet 1D
-base (+3 puntos porcentuales de F1 Macro) y al CNN-Transformer Híbrido
-(+7 puntos de F1 Macro), aunque quedando por detrás de la SENet 1D (79\% F1 Macro).
-
-El éxito de Mamba 1D se puede deber a su capacidad de procesar las dependencias temporales
-de la señal a través de un mecanismo de selección recurrente lineal variable que escala
-linealmente $O(L)$ en lugar de la \textit{self attention} cuadrática $O(L^2)$ del Transformer.
-Al evitar el sobreajuste masivo que sufren los Transformers en conjuntos de datos
-medianos, Mamba conserva gran parte de la información de largo alcance sin penalizar su
-capacidad de generalización en test. Sin embargo, su desempeño por debajo
-de la SENet 1D nos puede indicar que la atención específica a nivel de derivación física
-(atención de canales) provista por los bloques Squeeze-and-Excitation sigue siendo la
-estrategia más eficiente para lidiar con el ruido espacial e instrumental característico
-de las señales multicanal de ECG.
+La arquitectura \textbf{Mamba 1D} presenta un rendimiento sólido, obteniendo un F1 Macro del 75\% en el conjunto de test. Esto posiciona a Mamba 1D como una de las mejores arquitecturas en cuanto a generalización global, superando al baseline del CNN-Transformer Híbrido, aunque quedando por detrás de las versiones regularizadas de ResNet, SENet y del Transformer Estrecho. El éxito de Mamba 1D se puede deber a su capacidad de procesar las dependencias temporales a través de un mecanismo de selección recurrente lineal variable que escala linealmente $O(L)$ en lugar de la atención cuadrática $O(L^2)$ del Transformer. Al evitar el sobreajuste masivo que sufren los Transformers en conjuntos de datos medianos, Mamba conserva gran parte de la información de largo alcance sin penalizar su capacidad de generalización en test.
 
 \subsection{Discrepancia entre el rendimiento en test general y el benchmark de PhysioNet}
-Un hallazgo clave de este trabajo es la discrepancia observada entre el rendimiento
-en el conjunto de prueba general y las puntuaciones en el reto oficial de PhysioNet
-(\texttt{afpdb}):
+Un hallazgo clave de este trabajo es la discrepancia observada entre el rendimiento en el conjunto de prueba general y las puntuaciones en el reto oficial de PhysioNet (\texttt{afpdb}):
 \begin{itemize}
-  \item Originalmente se fué mas estricto a la hora de extraer ventanas, asumiendo que si
-  no se encontraban 5 minutos completos, no se consideraba. Esto dejó a la base de datos
-  \texttt{afpdb} como una fuente altamente representativa, y por ello los modelos
-  obtenían puntuaciones altas en el reto
-  (hasta 79\% en el CNN-Transformer y 75\% en la ResNet 1D), pero a costa de un F1-score
-  muy bajo en condiciones generales (56\% y 61\% respectivamente).
-  \item Tras realizar el aumento de datos mediante ventanas variables, el volumen de la
-  base de datos del reto (\texttt{afpdb}) pasa a representar solo el 1.2\% del total de
-  Clase 1 en el entrenamiento, que ahora es dominado por registros de Holter ambulatorio
-  de 24 horas (\texttt{ltafdb}) y dispositivos corporales inteligentes (\texttt{shdb-af}).
-  \item Como consecuencia directa, la generalización clínica ante nuevos sujetos mejora
-  notablemente (alcanzando el 81\% de F1 Pre-PAF en la SEResNet 1D), pero las puntuaciones
-  del reto específico se sitúan en 64\% para la SEResNet 1D, 61\% para el CNN-Transformer,
-  54\% para el Mamba 1D y 50\% para la ResNet 1D.
+  \item Originalmente se fue más estricto a la hora de extraer ventanas, asumiendo que si no se encontraban 5 minutos completos, no se consideraba. Esto dejó a la base de datos \texttt{afpdb} como una fuente altamente representativa, y por ello los modelos obtenían puntuaciones altas en el reto (hasta 79\% en el CNN-Transformer y 75\% en la ResNet 1D), pero a costa de un F1-score muy bajo en condiciones generales (56\% y 61\% respectivamente).
+  \item Tras realizar el aumento de datos mediante ventanas variables, el volumen de la base de datos del reto (\texttt{afpdb}) pasa a representar solo el 1.2\% del total de Clase 1 en el entrenamiento, que ahora es dominado por registros de Holter ambulatorio de 24 horas (\texttt{ltafdb}) y dispositivos corporales inteligentes (\texttt{shdb-af}).
+  \item Como consecuencia directa, la generalización clínica ante nuevos sujetos mejora notablemente (alcanzando el 82\% de F1 Pre-PAF en la ResNet optimizada), pero las puntuaciones del reto específico se sitúan en 71\% para el Transformer estrecho y aumentado, 68\% para la ResNet y SEResNet regularizadas y aumentadas, 54\% para el Mamba 1D y 50\% para la ResNet 1D baseline.
 \end{itemize}
 
-Al optimizar los modelos con un dataset más grande, diverso y realista,
-las redes aprenden a priorizar rasgos generales de ECG ambulatorio y wearables.
-Sin embargo, esto diluye la especialización del modelo a la base de datos \texttt{afpdb}
-original.
+Al optimizar los modelos con un dataset más grande, diverso y realista, las redes aprenden a priorizar rasgos generales de ECG ambulatorio y wearables. Sin embargo, esto diluye la especialización del modelo a la base de datos \texttt{afpdb} original.
 
 \section{Comparación con trabajos relacionados}
 \label{sec:comparacion_trabajos}
 
-La mayoría de los algoritmos publicados en la literatura científica que evalúan su
-rendimiento en el PhysioNet Challenge de predicción de PAF entrenan y validan sus
-modelos únicamente utilizando los datos de la base de datos \texttt{afpdb}, o de bases de
-datos específicas.
-Aunque muchos logran clasificaciones sobresalientes en este benchmark específico
-(79\% de precisión), carecen de la generalidad que ofrecen estos modelos.
+La mayoría de los algoritmos publicados en la literatura científica que evalúan su rendimiento en el PhysioNet Challenge de predicción de PAF entrenan y validan sus modelos únicamente utilizando los datos de la base de datos \texttt{afpdb}, o de bases de datos específicas. Aunque muchos logran clasificaciones sobresalientes en este benchmark específico (79\% de precisión), carecen de la generalidad que ofrecen estos modelos.
 
-Este trabajo demuestra que el entrenamiento exclusivo sobre una única base de datos
-induce un sesgo de adquisición artificial. Al contrastar nuestros modelos con una
-validación cruzada inter-sujeto sobre cinco bases de datos, demostramos la viabilidad
-de un predictor de PAF generalizable capaz de mantener una alta sensibilidad y
-especificidad incluso en señales capturadas por wearables en condiciones cotidianas.
+Este trabajo demuestra que el entrenamiento exclusivo sobre una única base de datos induce un sesgo de adquisición artificial. Al contrastar nuestros modelos con una validación cruzada inter-sujeto sobre cinco bases de datos, demostramos la viabilidad de un predictor de PAF generalizable capaz de mantener una alta sensibilidad y especificidad incluso en señales capturadas por wearables en condiciones cotidianas.

@@ -27,17 +27,18 @@ class SEResidualBlock(nn.Module):
     """
     1D Residual Block augmented with a Squeeze-and-Excitation attention layer.
     """
-    def __init__(self, in_channels: int, out_channels: int, stride: int = 1, reduction: int = 16):
+    def __init__(self, in_channels: int, out_channels: int, stride: int = 1, kernel_size: int = 15, reduction: int = 16):
         super(SEResidualBlock, self).__init__()
         
+        padding = kernel_size // 2
         self.conv1 = nn.Conv1d(
-            in_channels, out_channels, kernel_size=15,
-            stride=stride, padding=7, bias=False
+            in_channels, out_channels, kernel_size=kernel_size,
+            stride=stride, padding=padding, bias=False
         )
         self.bn1 = nn.BatchNorm1d(out_channels)
         self.conv2 = nn.Conv1d(
-            out_channels, out_channels, kernel_size=15,
-            stride=1, padding=7, bias=False
+            out_channels, out_channels, kernel_size=kernel_size,
+            stride=1, padding=padding, bias=False
         )
         self.bn2 = nn.BatchNorm1d(out_channels)
         
@@ -64,51 +65,63 @@ class SEResNetPAFClassifier(nn.Module):
     Input shape: (Batch, 2, Samples)
     Output shape: (Batch, NumClasses)
     """
-    def __init__(self, in_channels: int = 2, num_classes: int = 2, reduction: int = 16, hrv_dim: int = 0):
+    def __init__(
+        self, 
+        in_channels: int = 2, 
+        num_classes: int = 2, 
+        reduction: int = 16, 
+        hrv_dim: int = 0,
+        layers: list = [2, 2, 2, 2],
+        channels: list = [32, 64, 128, 256],
+        kernel_size: int = 15,
+        dropout: float = 0.5
+    ):
         super(SEResNetPAFClassifier, self).__init__()
         
         # Initial preparation layer
+        init_channels = channels[0]
         self.prep = nn.Sequential(
-            nn.Conv1d(in_channels, 32, kernel_size=31, stride=2, padding=15, bias=False),
-            nn.BatchNorm1d(32),
+            nn.Conv1d(in_channels, init_channels, kernel_size=31, stride=2, padding=15, bias=False),
+            nn.BatchNorm1d(init_channels),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=3, stride=2, padding=1)
         )
         
-        # Residual layers with SE attention
-        self.layer1 = nn.Sequential(
-            SEResidualBlock(32, 32, reduction=reduction),
-            SEResidualBlock(32, 32, reduction=reduction)
-        )
-        self.layer2 = nn.Sequential(
-            SEResidualBlock(32, 64, stride=2, reduction=reduction),
-            SEResidualBlock(64, 64, reduction=reduction)
-        )
-        self.layer3 = nn.Sequential(
-            SEResidualBlock(64, 128, stride=2, reduction=reduction),
-            SEResidualBlock(128, 128, reduction=reduction)
-        )
-        self.layer4 = nn.Sequential(
-            SEResidualBlock(128, 256, stride=2, reduction=reduction),
-            SEResidualBlock(256, 256, reduction=reduction)
-        )
+        # Build list of sequential blocks
+        layers_list = []
+        current_channels = init_channels
+        for i, num_blocks in enumerate(layers):
+            layer_blocks = []
+            out_channels = channels[i]
+            stride = 2 if i > 0 else 1
+            layer_blocks.append(SEResidualBlock(current_channels, out_channels, stride=stride, kernel_size=kernel_size, reduction=reduction))
+            current_channels = out_channels
+            for _ in range(1, num_blocks):
+                layer_blocks.append(SEResidualBlock(current_channels, current_channels, stride=1, kernel_size=kernel_size, reduction=reduction))
+            layers_list.append(nn.Sequential(*layer_blocks))
+            
+        # Register layers as named attributes to keep state_dict compatible
+        for idx, layer_module in enumerate(layers_list):
+            setattr(self, f"layer{idx+1}", layer_module)
+            
+        self.num_layers = len(layers_list)
         
         # Output layers
         self.avgpool = nn.AdaptiveAvgPool1d(1)
-        self.dropout = nn.Dropout(p=0.5)
+        self.dropout = nn.Dropout(p=dropout)
         
         self.hrv_dim = hrv_dim
+        final_channels = channels[-1]
         if hrv_dim > 0:
-            self.classifier = nn.Linear(256 + hrv_dim, num_classes)
+            self.classifier = nn.Linear(final_channels + hrv_dim, num_classes)
         else:
-            self.classifier = nn.Linear(256, num_classes)
+            self.classifier = nn.Linear(final_channels, num_classes)
 
     def forward(self, x: torch.Tensor, hrv: torch.Tensor = None) -> torch.Tensor:
         x = self.prep(x)
-        x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
-        x = self.layer4(x)
+        for idx in range(self.num_layers):
+            layer = getattr(self, f"layer{idx+1}")
+            x = layer(x)
         
         x = self.avgpool(x)
         x = torch.flatten(x, 1) 

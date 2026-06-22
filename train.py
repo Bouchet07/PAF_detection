@@ -3,8 +3,13 @@ from src.training.runner import train
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train a 1D ECG model for Paroxysmal Atrial Fibrillation (PAF) prediction.")
-    parser.add_argument("--model_type", type=str, default="resnet1d", choices=["resnet1d", "transformer", "senet", "mamba"],
-                        help="Model architecture to train (default: resnet1d)")
+    parser.add_argument("--model_type", type=str, default="resnet1d", choices=[
+        "resnet1d", "resnet1d_deep", "resnet1d_wide", "resnet1d_large_kernel", 
+        "resnet1d_small_kernel", "resnet1d_deep_narrow", 
+        "transformer", "transformer_deep", "transformer_wide", "transformer_dropout", "transformer_narrow",
+        "senet", "senet_deep", "senet_wide", "senet_large_kernel", "senet_small_kernel",
+        "senet_deep_narrow", "mamba"
+    ], help="Model architecture to train (default: resnet1d)")
     parser.add_argument("--window_seconds", type=int, default=10,
                         help="Input window size in seconds (default: 10)")
     parser.add_argument("--batch_size", type=int, default=64,

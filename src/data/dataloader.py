@@ -78,6 +78,18 @@ def get_loaders(
             d = dist.get(lbl, 0.0) * 100
             print(f"  Label {lbl} (Normal if 0, Pre-PAF if 1): {c} segments ({d:.2f}%)")
             
+    shared_signals = None
+    if in_memory:
+        import numpy as np
+        print(f"Preloading all {len(df)} segments into RAM...")
+        shared_signals = {}
+        for _, row in df.iterrows():
+            file_path = os.path.join(data_dir, row['filename'])
+            if os.path.exists(file_path):
+                shared_signals[row['filename']] = np.load(file_path).astype(np.float32)
+            else:
+                print(f"Warning: File {file_path} not found.")
+            
     # Instantiate Datasets
     train_dataset = PAFDataset(
         metadata=train_df, 
@@ -85,7 +97,8 @@ def get_loaders(
         window_seconds=window_seconds, 
         mode='train', 
         in_memory=in_memory,
-        augment=augment
+        augment=augment,
+        signals=shared_signals
     )
     
     # Extract training set's HRV statistics to normalize validation and test sets without leakage
@@ -99,7 +112,8 @@ def get_loaders(
         mode='val', 
         in_memory=in_memory,
         hrv_mean=hrv_mean,
-        hrv_std=hrv_std
+        hrv_std=hrv_std,
+        signals=shared_signals
     )
     test_dataset = PAFDataset(
         metadata=test_df, 
@@ -108,7 +122,8 @@ def get_loaders(
         mode='val',  # test set acts as deterministic validation/inference
         in_memory=in_memory,
         hrv_mean=hrv_mean,
-        hrv_std=hrv_std
+        hrv_std=hrv_std,
+        signals=shared_signals
     )
     
     # Build DataLoaders
@@ -172,6 +187,18 @@ def get_kfold_loaders(
     
     test_df = df[df['subject'].isin(test_subjects)].reset_index(drop=True)
     
+    shared_signals = None
+    if in_memory:
+        import numpy as np
+        print(f"Preloading all {len(df)} segments into RAM for K-Fold...")
+        shared_signals = {}
+        for _, row in df.iterrows():
+            file_path = os.path.join(data_dir, row['filename'])
+            if os.path.exists(file_path):
+                shared_signals[row['filename']] = np.load(file_path).astype(np.float32)
+            else:
+                print(f"Warning: File {file_path} not found.")
+
     # Group K-Fold on cv_subjects
     from sklearn.model_selection import KFold
     kf = KFold(n_splits=k_fold, shuffle=True, random_state=seed)
@@ -192,7 +219,8 @@ def get_kfold_loaders(
             window_seconds=window_seconds, 
             mode='train', 
             in_memory=in_memory,
-            augment=augment
+            augment=augment,
+            signals=shared_signals
         )
         
         hrv_mean = train_dataset.hrv_mean
@@ -205,7 +233,8 @@ def get_kfold_loaders(
             mode='val', 
             in_memory=in_memory,
             hrv_mean=hrv_mean,
-            hrv_std=hrv_std
+            hrv_std=hrv_std,
+            signals=shared_signals
         )
         
         # Build DataLoaders
@@ -245,7 +274,8 @@ def get_kfold_loaders(
         mode='val',
         in_memory=in_memory,
         hrv_mean=baseline_train.hrv_mean,
-        hrv_std=baseline_train.hrv_std
+        hrv_std=baseline_train.hrv_std,
+        signals=shared_signals
     )
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
     
