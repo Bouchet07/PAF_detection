@@ -10,8 +10,8 @@ if __name__ == "__main__":
         "senet", "senet_deep", "senet_wide", "senet_large_kernel", "senet_small_kernel",
         "senet_deep_narrow", "mamba"
     ], help="Model architecture to train (default: resnet1d)")
-    parser.add_argument("--window_seconds", type=int, default=10,
-                        help="Input window size in seconds (default: 10)")
+    parser.add_argument("--window_seconds", type=int, default=60,
+                        help="Input window size in seconds (default: 60)")
     parser.add_argument("--batch_size", type=int, default=64,
                         help="Batch size (default: 64)")
     parser.add_argument("--num_epochs", type=int, default=30,

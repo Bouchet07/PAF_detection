@@ -63,25 +63,34 @@ ECG utilizables, ya que los otros 2 constan únicamente de anotaciones.
 \label{sec:caracteristicas_datos}
 
 A continuación se presenta una tabla~\ref{tab:resumen_datos} que resume las características de las 5 bases de datos utilizadas
-en este proyecto, incluyendo el número de pacientes, el número de registros, el número
-de canales y la frecuencia de muestreo de cada base de datos.
+en este proyecto, incluyendo el número de pacientes, el número de registros, la duración
+media de los mismos, el número de segmentos extraídos, el número de canales y la frecuencia de muestreo de cada base de datos.
 
 \begin{table}[htbp]
   \centering
+  \small
   \caption{Resumen comparativo de las 5 bases de datos de estudio}
   \label{tab:resumen_datos}
-  \begin{tabular}{lcccc}
+  \begin{tabular}{lcccccc}
     \toprule
-    \textbf{Base de datos} & \textbf{Nº Pacientes} & \textbf{Nº Registros} & \textbf{Canales} & \textbf{Frec. Muestreo} \\
+    \textbf{Base de datos} & \textbf{Pacientes} & \textbf{Registros} & \textbf{Dur. Media} & \textbf{Segmentos} & \textbf{Canales} & \textbf{Frec. Muestreo} \\
     \midrule
-    \texttt{afpdb~\cite{moody_paf_2001}} & 48 (98) & 100 (300) & 2 & 128 Hz \\
-    \texttt{cpsc2021~\cite{PhysioNet-cpsc2021-1.0.0}} & 105 & 1425 & 2 & 200 Hz \\
-    \texttt{ltafdb~\cite{petrutiu_long-term_2003}} & 84 & 84 & 2 & 128 Hz \\
-    \texttt{shdb-af~\cite{PhysioNet-shdb-af-1.0.1}} & 122 & 128 & 2 & 200 Hz \\
-    \texttt{afdb~\cite{moody_mit-bih_1992}} & 25 & 25 (23) & 2 & 250 Hz \\
+    \texttt{afpdb} (train)~\cite{moody_paf_2001} & 48 & 100 & 30 min & 250 & 2 & 128 Hz \\
+    \texttt{afpdb} (test)~\cite{moody_paf_2001} & 50 & 100 & 30 min & 100 & 2 & 128 Hz \\
+    \texttt{cpsc2021}~\cite{PhysioNet-cpsc2021-1.0.0} & 105 & 1425 & 20,2 min & 1626 & 2 & 200 Hz \\
+    \texttt{ltafdb}~\cite{petrutiu_long-term_2003} & 84 & 84 & 23,3 h & 1220 & 2 & 128 Hz \\
+    \texttt{shdb-af}~\cite{PhysioNet-shdb-af-1.0.1} & 122 & 128 & 23,8 h & 672 & 2 & 200 Hz \\
+    \texttt{afdb}~\cite{moody_mit-bih_1992} & 23 & 23 & 9,4 h & 237 & 2 & 250 Hz \\
     \bottomrule
   \end{tabular}
   \vskip 5pt
   \small
-  \textit{Nota:} Para \texttt{afpdb}, entre paréntesis se indica el total incluyendo el conjunto de test. Para \texttt{afdb}, entre paréntesis se indica el número de registros que contienen señales utilizables.
+  %\textit{Nota:} Para \texttt{afdb}, se muestran únicamente los 23 registros que contienen señales de ECG utilizables (descartando los 2 que constan solo de anotaciones).
 \end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{img/distribucion_segmentos.pdf}
+  \caption{Distribución de segmentos de 5 minutos extraídos por clase y base de datos}
+  \label{fig:distribucion_segmentos}
+\end{figure}

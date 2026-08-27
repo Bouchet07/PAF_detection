@@ -16,7 +16,7 @@ from src.data.preprocess import compute_hrv_features
 def load_test_record(
     data_dir: str, 
     record_name: str, 
-    window_seconds: int = 30, 
+    window_seconds: int = 60, 
     target_fs: int = 128, 
     target_channels: int = 2,
     hrv_mean: np.ndarray = None,
@@ -102,7 +102,7 @@ def load_model_from_run(run_dir: str, device: torch.device):
         config = json.load(f)
         
     model_type = config.get("model_type", "resnet1d").lower()
-    window_seconds = config.get("window_seconds", 10)
+    window_seconds = config.get("window_seconds", 60)
     use_hrv = config.get("use_hrv", False)
     k_fold = config.get("k_fold", 1)
     hrv_dim = 9 if use_hrv else 0

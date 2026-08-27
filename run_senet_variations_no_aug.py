@@ -29,7 +29,7 @@ for model_type in model_types:
     train_cmd = [
         "uv", "run", "python", "train.py",
         "--model_type", model_type,
-        "--window_seconds", "10",
+        "--window_seconds", "60",
         "--num_epochs", "30",
         "--use_hrv",
         "--k_fold", "5",

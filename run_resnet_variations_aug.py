@@ -7,7 +7,8 @@ model_types = [
     "resnet1d_deep",          # Deeper ResNet (layers=[3, 3, 3, 3])
     "resnet1d_wide",          # Wider ResNet (channels=[64, 128, 256, 512])
     "resnet1d_large_kernel",  # Larger Conv kernel size (kernel_size=23)
-    "resnet1d_small_kernel"   # Smaller Conv kernel size (kernel_size=7)
+    "resnet1d_small_kernel",  # Smaller Conv kernel size (kernel_size=7)
+    "resnet1d_deep_narrow"    # Deeper but narrower (layers=[3, 4, 6, 3], channels=[24, 48, 96, 192])
 ]
 
 results_subfolder = "resnet_variations"
@@ -28,7 +29,7 @@ for model_type in model_types:
     train_cmd = [
         "uv", "run", "python", "train.py",
         "--model_type", model_type,
-        "--window_seconds", "10",
+        "--window_seconds", "60",
         "--num_epochs", "30",
         "--use_hrv",
         "--k_fold", "5",

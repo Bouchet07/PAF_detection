@@ -2,40 +2,79 @@
 % CAPÍTULO 5: CONCLUSIONES
 % ============================================================
 
-\chapter{Conclusiones}
+\chapter{Conclusiones y Líneas Futuras}
 \label{chap:conclusiones}
 
-A continuación, se presentan las conclusiones finales del proyecto planteando las futuras líneas de investigación.
+A continuación se presental las conclusiones finales del proyecto, cumplimiento de objetivos, valoraciones
+y líneas futuras de investigación derivadas de este trabajo.
 
 \section{Resumen y aportaciones del proyecto}
 \label{sec:resumen_conclusiones}
-Las principales contribuciones incluyen:
+
+Este trabajo ha abordado el problema de la predicción inminente de la
+Fibrilación Auricular Paroxística (PAF) a partir de señales de electrocardiograma en ritmo sinusal.
+Las principales contribuciones de este proyecto incluyen:
+
 \begin{itemize}
-  \item La consolidación de cinco bases de datos heterogéneas
+  \item \textbf{Pipeline de Preprocesamiento Armonizado y Dinámico:}
+  Se ha diseñado un pipeline capaz de unificar cinco bases de datos de distinta procedencia
   (\texttt{afpdb}, \texttt{cpsc2021}, \texttt{ltafdb}, \texttt{shdb-af} y \texttt{afdb})
-  en un único formato.
-  \item La prevención de filtrado de información (data leakage) aplicando una
-  separación de conjuntos de datos agrupando por paciente.
-  \item La comparación del rendimiento de modelos convolucionales tradicionales frente
-  a arquitecturas residuales avanzadas (SEResNet) con \textit{self-attention} de canales.
+  gestionando discrepancias entre ellas como frecuencias de muestreo distintas, que obliga a un
+  resampleo uniforme a $128$~Hz.
+  \item \textbf{Evaluación Comparativa de Arquitecturas:}
+  Se han comparado bajo validación cruzada por grupos (inter-sujeto)
+  redes neuronales residuales (ResNet 1D), mecanismos de atención por canal (SEResNet 1D),
+  autoatención temporal híbrida (CNN-Transformer) y el modelo de espacio de estados selectivo
+  (Mamba 1D).
+  \item \textbf{Demostración de la Sinergia Híbrida (ECG + HRV):}
+  Se ha corroborado empíricamente que la inclusión conjunta de información morfológica a corto plazo
+  (ECG con una ventana de $10\text{ s}$) y a mediano plazo (HRV en ventana de
+  $5\text{ min}$) proporciona una mejora en la clasificación.
 \end{itemize}
 
 \section{Cumplimiento de objetivos}
 \label{sec:cumplimiento_objetivos}
-Se han alcanzado los objetivos iniciales planteados...
+
+Se ha alcanzado con éxito el propósito principal del trabajo a través de los siguientes hitos:
+\begin{itemize}
+  \item \textbf{Detección del estado crítico Pre-PAF:} Se ha logrado identificar las variaciones morfológicas
+  que llevan a un episodio de fibrilación auricular en la ventana crítica de 5 minutos inmediatamente anterior al episodio, logrando un
+  F1-score del $0.81$ en la clase Pre-PAF mediante la configuración ResNet 1D, o si atendemos a modelos clásicos
+  con un F1-score de $0.87$ con \textit{Random Forest}.
+  \item \textbf{Mitigación del Data Leakage:} La separación estricta de conjuntos de datos agrupando
+  por paciente garantiza que las métricas de rendimiento reportadas no estén
+  sesgadas por memorización de morfologías específicas de un sujeto.
+  \item \textbf{Estudio de la contribución HRV:} Se evaluó el peso relativo de la morfología del ECG y las carácteristicas HRV.
+\end{itemize}
 
 \section{Valoración crítica y limitaciones}
 \label{sec:valoracion_critica}
-A pesar de la alta capacidad de clasificación, el problema presenta desafíos debido
-a la variabilidad de la señal ECG en diferentes pacientes y el ruido inherente a los
-dispositivos de registro ambulatorio.
+
+El estudio presenta limitaciones que deben ser consideradas:
+\begin{itemize}
+  \item \textbf{Volumen acotado de datos clínicos:}
+  El aprendizaje profundo requiere volúmenes masivos de datos para obtener los mejores resultados.
+  En este proyecto, la cantidad limitada de señales
+  explica que arquitecturas muy sofisticadas (como el Transformer o SEResNet) muestren un sobreajuste
+  local y no consigan superar a clasificadores clásicos como el
+  \textit{Random Forest} alimentado con datos HRV precalculados.
+  \item \textbf{Inestabilidad frecuencial de HRV en ventanas cortas:}
+  Para calcular de forma fiable la banda espectral de baja frecuencia (LF, $0.04-0.15\text{ Hz}$),
+  se deberían registrar en la señal al menos dos ciclos de la oscilación más baja ($25\text{ s}$
+  por ciclo), exigiendo registros mínimos de $50$ a $75\text{ s}$.
+  El uso de ventanas cortas (menores a 1 minuto)
+  induce una inestabilidad matemática en los descriptores espectrales debido a la pérdida
+  de resolución frecuencial.
+\end{itemize}
 
 \section{Líneas futuras}
 \label{sec:lineas_futuras}
-Como extensiones naturales al trabajo realizado, se proponen las siguientes líneas
-de desarrollo futuro:
+
+A continuación, se proponen las siguientes líneas de desarrollo futuro:
 \begin{itemize}
-  \item \textbf{Exploración de Modelos de Lenguaje para Señales (Signal Transformers):} Investigar arquitecturas avanzadas auto-supervisadas preentrenadas en grandes corpus de datos ECG.
-  \item \textbf{Optimización de Hyperparámetros en SEResNet:} Refinar el ratio de reducción en los bloques Squeeze-and-Excitation.
-  \item \textbf{Despliegue e integración clínica:} Probar el clasificador en sistemas integrados de monitoreo en tiempo real.
+  \item \textbf{Exploración de Modelos Fundacionales Preentrenados (Signal Transformers):}
+  Investigar la transferencia de aprendizaje utilizando modelos auto-supervisados entrenados
+  en millones de horas de ECG clínicos, lo que resolvería la limitación del tamaño de datos local.
+  \item \textbf{Validación en Tiempo Real y Wearables:} Evaluar los clasificadores embebidos en
+  dispositivos en tiempo real, validando su sensibilidad ante el ruido de movimiento cotidiano.
 \end{itemize}

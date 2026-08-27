@@ -61,7 +61,7 @@ Al analizar los archivos locales del proyecto, obtenemos las siguientes estadís
 
 El script unifica y procesa los datos crudos para evitar sesgos y filtraciones de información:
 - **Armonización:** Todas las señales se resamplean a **128 Hz** y se fuerza una estructura de **2 canales**.
-- **Extracción de Clase 1 (Pre-PAF):** Se aíslan ventanas de hasta 5 minutos (`WINDOW_PRE_PAF_SEC = 300`, con un mínimo de 10 segundos definido en `MIN_PRE_PAF_SEC`) previas al inicio de un episodio de PAF. La ventana retrocede hasta el final de la arritmia anterior o el inicio del registro, garantizando que el segmento contenga solo ritmo sinusal.
+- **Extracción de Clase 1 (Pre-PAF):** Se aíslan ventanas de hasta 5 minutos (`WINDOW_PRE_PAF_SEC = 300`, con un mínimo de 1 minuto / 60 segundos definido en `MIN_PRE_PAF_SEC`) previas al inicio de un episodio de PAF. La ventana retrocede hasta el final de la arritmia anterior o el inicio del registro, garantizando que el segmento contenga solo ritmo sinusal y suficientes latidos para un cómputo fiable de HRV en tiempo y frecuencia.
 - **Extracción de Clase 0 (Control):** Se aíslan ventanas de 5 minutos en ritmo sinusal, alejadas al menos 30 minutos (`label_0_gap_sec = 1800`) de cualquier episodio de PAF.
 - **Extracción de HRV (Variabilidad del Ritmo Cardíaco):** A partir de los picos R (QRS) detectados en las anotaciones, se calculan 9 variables HRV: `mean_rr`, `std_rr`, `rmssd`, `pnn50`, `mean_hr`, `std_hr`, `lf`, `hf`, y la ratio `lf_hf_ratio`.
 
@@ -102,7 +102,7 @@ uv run python -m src.utils.download
 uv run python -m src.data.preprocess
 
 # 3. Entrenar el modelo (con soporte para HRV y validación cruzada k-fold)
-uv run python train.py --model_type senet --window_seconds 10 --num_epochs 30 --use_hrv --k_fold 5
+uv run python train.py --model_type senet --window_seconds 60 --num_epochs 30 --use_hrv --k_fold 5
 
 # 4. Evaluar en el conjunto de test blindado
 uv run python test.py --metadata_path metadata.csv --data_dir processed_data

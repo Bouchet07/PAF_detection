@@ -17,7 +17,7 @@ class PAFDataset(Dataset):
         self, 
         metadata: pd.DataFrame, 
         data_dir: str = 'processed_data', 
-        window_seconds: int = 30, 
+        window_seconds: int = 60, 
         target_fs: int = 128, 
         mode: str = 'train', 
         in_memory: bool = True,

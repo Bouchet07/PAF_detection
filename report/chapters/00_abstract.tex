@@ -16,27 +16,21 @@ Electrocardiogram Using Deep Neural Networks}
 \section*{RESUMEN}
 \selectlanguage{spanish}
 
-La Fibrilación Auricular Paroxística (PAF) es una de las arritmias mas comunes caracterizada
-por latidos irregulares de la aurícula. Su diagnóstico temprano es complejo ya que la naturaleza
-de la fibrilacion auricular paroxística es intermitente, por lo que la predicción de episodios
-inmintentes a partir de señales ECG en ritmo sinusal es de especial interés.
-Este trabajo aborda este desafío.
+La Fibrilación Auricular Paroxística (PAF) es una de las arritmias más comunes, caracterizada por latidos irregulares en la aurícula.
+Debido a su naturaleza intermitente que la caracteriza, su diagnóstico temprano es complejo, es por ello que la predicción de dichos 
+episodios a paritr de señales ECG en ritmo sinusal es de especial interés. En este trabajo, se ha abordado este desafío.
 
-Para asegurar la capacidad de generalización de los modelos, se consolidó un dataset a
-partir de cinco bases de datos públicas de PhysioNet. Se diseñó un preprocesamiento
-que extrae ventanas de duración variable previas a los episodios y
-extrae nueve variables de variabilidad del ritmo cardíaco (HRV).
-Se implementaron cuatro arquitecturas de red neuronal 1D: ResNet 1D
-(baseline), SEResNet 1D (con atención de canales), un híbrido CNN-Transformer y Mamba 1D
-(\textit{selective state space model}). Para evitar la filtración de datos, los
-experimentos se validaron de forma cruzada agrupando estrictamente por sujeto
+Una de las limitaciones que suelen tener trabajos de este tipo es la falta de generalización de los modelos, ya que si son entrenados
+en una base de datos específica, de unas características concretas, no suelen generalizar bien a otras bases de datos. 
+En este trabajo, se han consolidado cinco bases de datos públicas de PhysioNet para abordar esta limitación. 
+
+Se ha diseñado un preprocesamiento que extrae ventanas inmediatamente anteriores al inicio de un episodio de fibrilación auricular, 
+y se extraen nueve variables de variabilidad del ritmo cardíaco (HRV). Se han implementado cuatro arquitecturas distintas de redes neuronales:
+ResNet 1D (baseline), SEResNet 1D (con atención de canales), un híbrido CNN-Transformer y Mamba 1D
+(\textit{selective state space model}). Para evitar la filtración de datos, se hizo validación cruzada, agrupando estrictamente por sujeto
 (5-Fold GroupKFold).
 
-Los resultados en el conjunto de test demuestran la
-superioridad de la SEResNet 1D con un F1 Macro del 79\% y un F1-score del
-81\% en la clase crítica Pre-PAF, seguido por el modelo Mamba 1D con un 75\% de F1 Macro.
-
-Este estudio valida la viabilidad de un sistema generalizable inter-sujeto
+Este trabajo estudia la viabilidad de un sistema generalizable inter-sujeto
 para la monitorización de alerta temprana de episodios de Fibrilación Auricular Paroxística.
 
 \vspace{0.8cm}
@@ -47,13 +41,13 @@ para la monitorización de alerta temprana de episodios de Fibrilación Auricula
 \section*{ABSTRACT}
 \selectlanguage{english}
 
-Paroxysmal Atrial Fibrillation (PAF) is one of the most common arrhythmias, characterized by irregular heartbeats in the atrium. Its early diagnosis is complex because the nature of paroxysmal atrial fibrillation is intermittent; therefore, predicting imminent episodes from ECG signals in sinus rhythm is of special interest. This work addresses this challenge.
+Paroxysmal Atrial Fibrillation (PAF) is one of the most common arrhythmias, characterized by irregular heartbeats in the atrium. Due to its intermittent nature that characterizes it, its early diagnosis is complex; that is why the prediction of such episodes from ECG signals in sinus rhythm is of special interest. In this work, this challenge has been addressed.
 
-To ensure the models' generalization capability, a dataset was consolidated from five public PhysioNet databases. A preprocessing pipeline was designed to extract variable-duration windows prior to the episodes and extract nine heart rate variability (HRV) variables. Four 1D neural network architectures were implemented: 1D ResNet (baseline), 1D SEResNet (with channel attention), a hybrid CNN-Transformer, and 1D Mamba (selective state space model). To prevent data leakage, the experiments were cross-validated by strictly grouping by subject (5-Fold GroupKFold).
+One of the limitations that works of this type usually have is the lack of generalization of the models, since if they are trained on a specific database, with concrete characteristics, they do not usually generalize well to other databases. In this work, five public databases from PhysioNet have been consolidated to address this limitation.
 
-The results on the test set demonstrate the superiority of the 1D SEResNet with a Macro F1 of 79\% and an F1-score of 81\% in the critical Pre-PAF class, followed by the 1D Mamba model with a 75\% Macro F1.
+A preprocessing has been designed that extracts windows immediately prior to the onset of an atrial fibrillation episode, and nine heart rate variability (HRV) variables are extracted. Four different neural network architectures have been implemented: 1D ResNet (baseline), 1D SEResNet (with channel attention), a hybrid CNN-Transformer, and 1D Mamba (\textit{selective state space model}). To avoid data leakage, cross-validation was performed, grouping strictly by subject (5-Fold GroupKFold).
 
-This study validates the feasibility of an inter-subject generalizable system for early warning monitoring of Paroxysmal Atrial Fibrillation episodes.
+This work studies the feasibility of an inter-subject generalizable system for early-warning monitoring of Paroxysmal Atrial Fibrillation episodes.
 
 \vspace{0.8cm}
 \noindent\textbf{Keywords:} Paroxysmal Atrial Fibrillation, Imminent Prediction, ECG Signal Processing, Deep Learning, Heart Rate Variability (HRV), Mamba.

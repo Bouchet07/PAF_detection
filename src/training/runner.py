@@ -15,7 +15,7 @@ from src.utils.metrics import plot_training_curves, plot_confusion_matrix, plot_
 
 def train(
     model_type: str = 'resnet1d',
-    window_seconds: int = 10, 
+    window_seconds: int = 60, 
     batch_size: int = 64, 
     num_epochs: int = 30, 
     lr: float = 0.001,
@@ -346,10 +346,13 @@ def train(
     plot_confusion_matrix(best_cm, save_path=os.path.join(plots_dir, "confusion_matrix.png"), title=f'Confusion Matrix: {run_name}')
     
     if len(best_val_probs) > 0:
-        plot_eval_curves(
-            y_true=np.array(best_val_labels),
-            y_probs=np.array(best_val_probs),
-            save_path=os.path.join(plots_dir, 'validation_evaluation_curves.png'),
-            title_prefix=f'Validation Set ({run_name})'
-        )
+        try:
+            plot_eval_curves(
+                y_true=np.array(best_val_labels),
+                y_probs=np.array(best_val_probs),
+                save_path=os.path.join(plots_dir, 'validation_evaluation_curves.png'),
+                title_prefix=f'Validation Set ({run_name})'
+            )
+        except Exception as e:
+            print(f"Warning: Failed to generate validation curves: {e}")
     print(f"All training outputs saved successfully to: {run_dir}")

@@ -12,7 +12,7 @@ from scipy.interpolate import interp1d
 TARGET_FS = 128
 WINDOW_PRE_PAF_SEC = 300  # 5-minute pre-onset window
 CHANNELS = 2
-MIN_PRE_PAF_SEC = 10  # Minimum required clean sinus rhythm duration in seconds before onset
+MIN_PRE_PAF_SEC = 60  # Minimum required clean sinus rhythm duration in seconds before onset (1 minute)
 
 @dataclass
 class WindowMetadata:

@@ -4,6 +4,7 @@ import sys
 
 # Define the models we want to evaluate
 model_types = [
+    "resnet1d",               # Baseline model (layers=[2, 2, 2, 2], channels=[32, 64, 128, 256])
     "resnet1d_deep",          # Deeper ResNet (layers=[3, 3, 3, 3] instead of [2, 2, 2, 2])
     "resnet1d_wide",          # Wider ResNet (channels=[64, 128, 256, 512] instead of [32, 64, 128, 256])
     "resnet1d_large_kernel",  # Larger Conv kernel size (kernel_size=23 instead of 15)
@@ -23,13 +24,13 @@ for model_type in model_types:
     print("="*80 + "\n")
     
     # Path inside results/resnet_variations/
-    run_name = f"{results_subfolder}/{model_type}"
+    run_name = f"{results_subfolder}/{model_type}_no_aug"
     
     # 1. Train the model using 5-fold Group CV (with HRV)
     train_cmd = [
         "uv", "run", "python", "train.py",
         "--model_type", model_type,
-        "--window_seconds", "10",
+        "--window_seconds", "60",
         "--num_epochs", "30",
         "--use_hrv",
         "--k_fold", "5",
@@ -44,7 +45,7 @@ for model_type in model_types:
         continue
         
     # 2. Evaluate on test set, perform challenge predictions, and rename directory with score
-    run_dir = os.path.join("results", results_subfolder, model_type)
+    run_dir = os.path.join("results", results_subfolder, f"{model_type}_no_aug")
     test_cmd = [
         "uv", "run", "python", "test.py",
         "--run_dir", run_dir

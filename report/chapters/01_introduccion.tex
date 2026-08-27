@@ -5,7 +5,36 @@
 \chapter{Introducción}
 \label{chap:introduccion}
 
-La Fibrilación Auricular (FA) es la arritmia cardíaca más común, caracterizada por una activación eléctrica auricular caótica (como se ilustra en la Figura~\ref{fig:ejemplo}). Esta patología provoca una pérdida de la contracción auricular efectiva, lo que incrementa el riesgo de formación de trombos, accidentes cerebrovasculares (ictus), insuficiencia cardíaca y deterioro cognitivo a largo plazo \cite{wikipedia_atrial_2026}.
+\subsection{Fundamentos de la Electrocardiografía (ECG)}
+
+Un electrocardiograma (ECG) es una representación gráfica de la actividad eleéctrica del corazón en función
+del tiempo. Debido a que en cada latido se produce una despolarización y una repolarización de las células,
+se generan potenciales eéctricos que pueden ser detectados desde la superficie del cuerpo.
+
+Para capturar esta señal, se colocan electrodos sobre la superficie del cuerpo del paciente, en puntos
+específicos, capaces de medir la diferencia de potencial eléctrico generada por este latido. 
+
+La combinación de estos electrodos da lugar a las \textit{derivaciones}. En la práctica,
+se suele utilizar el sistema de 12 derivaciones, el cual se divide en:
+\begin{itemize}
+    \item \textbf{Derivaciones bipolares (I, II, III):} Miden la diferencia de potencial
+    entre dos extremidades (siguiendo el triángulo de Einthoven).
+    \item \textbf{Derivaciones monopolares aumentadas (aVR, aVL, aVF):} Miden el potencial
+    en una extremidad respecto a un punto de referencia central.
+    \item \textbf{Derivaciones precordiales (V1 a V6):} Situadas directamente sobre el tórax para
+    observar la actividad eléctrica en el plano horizontal del corazón.
+\end{itemize}
+
+Cada derivación observa el mismo fenómeno eléctrico, pero desde un ángulo espacial distinto. Esto resulta
+clave para la detección de patologías como arritmias o infartos. \cite{wikipedia_electrocardiography_2026}
+
+% ---------- cambiar si hay timepo hacia arriba
+
+La Fibrilación Auricular (FA) es la arritmia cardíaca más común, caracterizada por una activación
+eléctrica auricular caótica (como se ilustra en la Figura~\ref{fig:ejemplo}).
+Esta patología provoca una pérdida de la contracción auricular efectiva, lo que incrementa
+el riesgo de formación de trombos, accidentes cerebrovasculares (ictus), insuficiencia cardíaca
+y deterioro cognitivo a largo plazo \cite{wikipedia_atrial_2026}.
 
 \begin{figure}[htbp]
   \centering
@@ -42,18 +71,15 @@ heterogéneas, comparando cuatro arquitecturas de redes neuronales.
 \section{Contexto del Trabajo}
 \label{sec:contexto}
 
-Clásicamente, la predicción de episodios cardíacos se ha abordado mediante la extracción
-manual de parámetros de Variabilidad del Ritmo Cardíaco
-(HRV, \textit{Heart Rate Variability}) y la aplicación de clasificadores
-lineales. Si bien estas métricas ofrecen información valiosa del equilibrio del sistema
-nervioso autónomo sobre el nodo sinusal, son incapaces de capturar las distorsiones
-morfológicas locales de las ondas del ECG (como cambios finos en la onda P o en el
-intervalo PR) que a menudo preceden a la FA.
+Clasicamente este problema solia abordarse mediante la extracción de características de
+variabilidad del ritmo cardíaco (HRV, \textit{Heart Rate Variability}) y por un clasificador lineal. Sin embargo esta
+estrategia no es capaz de analizar las distorsiones morfológicas locales de las señales
+de ECG (como cambios finos en la onda P o en el intervalo PR) que preceden a la FA.
 
-Las redes neuronales han revolucionado este campo, permitiendo
-a las redes convolucionales y de atención extraer representaciones directamente a
-partir de la señal de ECG cruda (\textit{end-to-end}). No obstante, la mayoría de
-los estudios del estado del arte presentan dos limitaciones críticas:
+Las redes neuronales cambian la forma de abordar este problema, permitiendo extraer información
+directamente de la señal ECG sin procesar. No obstante hay que tener en cuenta algunas limitaciones
+como:
+
 \begin{enumerate}
   \item \textbf{Sesgo de Base de Datos:} Se entrenan utilizando una única base
   de datos. Esto genera modelos altamente sobreajustados a las condiciones de ruido y
@@ -61,13 +87,11 @@ los estudios del estado del arte presentan dos limitaciones críticas:
   independientes.
   \item \textbf{Data Leakage y validaciones débiles:} Con frecuencia se comparten
   ventanas del mismo paciente entre los conjuntos de entrenamiento y test,
-  reportando precisiones artificialmente altas pero clínicamente inutilizables.
+  reportando precisiones artificialmente altas.
 \end{enumerate}
 
 Este trabajo se enfoca en resolver estas limitaciones utilizando un dataset consolidado
-masivo multisujeto procedente de sensores hospitalarios de larga duración y dispositivos
-inteligentes, evaluando los modelos mediante una validación cruzada inter-sujeto estricta.
-
+procedente de distintas bases de datos, evaluando los modelos mediante una validación cruzada inter-sujeto estricta.
 
 
 \section{Objetivos del Proyecto}
@@ -76,10 +100,10 @@ inteligentes, evaluando los modelos mediante una validación cruzada inter-sujet
 El objetivo de este proyecto es
 \textbf{diseñar, implementar y evaluar un sistema capaz de
 predecir de forma inminente (en una ventana de 5 minutos antes del inicio) episodios de
-Fibrilación Auricular Paroxística (PAF) a partir de segmentos de 10 segundos de señal ECG en
+Fibrilación Auricular Paroxística (PAF) a partir de segmentos de 1 minuto de señal ECG en
 ritmo sinusal}.
 
-Para alcanzar este fin, se definen los siguientes objetivos específicos:
+Para alcanzar este fin, se definen los siguientes objetivos:
 \begin{itemize}
   \item \textbf{Objetivo 1:} 
   Integrar cinco bases de datos heterogéneas de PhysioNet:
@@ -89,8 +113,7 @@ Para alcanzar este fin, se definen los siguientes objetivos específicos:
   extracción de ventanas variables de ritmo sinusal Pre-PAF y de características
   temporales y frecuenciales de HRV.
   \item \textbf{Objetivo 3:} 
-  Entrenar cuatro arquitecturas de redes neuronales convolucionales
-  y secuenciales 1D: ResNet 1D (modelo base residual),
+  Entrenar distintas arquitecturas de redes neuronales como: ResNet 1D (modelo base residual),
   SEResNet 1D (con atención por canal Squeeze-and-Excitation),
   un modelo CNN-Transformer (\textit{multi-head self attention})
   y Mamba 1D (basado en \textit{state space models}).

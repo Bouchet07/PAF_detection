@@ -206,10 +206,16 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-#data
+# Data, Checkpoints and Backups
 /data/
 /results/
 /processed_data/
+*backup*/
+*_backup*/
+*_backup.*
+*.npy
+*.pth
+scratch/
 *.ipynb
 _*
 
@@ -230,6 +236,8 @@ _*
 *.fdb_latexmk
 *.bbl
 *.blg
+*.bbl-SAVE-ERROR
+temp.bib
 *.idx
 *.glo
 *.ist
