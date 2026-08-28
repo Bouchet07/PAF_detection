@@ -25,13 +25,20 @@ se suele utilizar el sistema de 12 derivaciones, el cual se divide en:
     observar la actividad eléctrica en el plano horizontal del corazón.
 \end{itemize}
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.5\textwidth]{img/EKG_leads.png}
+  \caption{Orientación espacial de las derivaciones ECG. Imagen obtenida de \href{https://en.wikipedia.org/wiki/Electrocardiography}{Wikipedia}.}
+  \label{fig:orientacion_derivaciones}
+\end{figure}
+
 Cada derivación observa el mismo fenómeno eléctrico, pero desde un ángulo espacial distinto. Esto resulta
 clave para la detección de patologías como arritmias o infartos. \cite{wikipedia_electrocardiography_2026}
 
 % ---------- cambiar si hay timepo hacia arriba
 
-La Fibrilación Auricular (FA) es la arritmia cardíaca más común, caracterizada por una activación
-eléctrica auricular caótica (como se ilustra en la Figura~\ref{fig:ejemplo}).
+La Fibrilación Auricular (FA) es la arritmia cardíaca más común, caracterizada por un comportamiento
+auricular caótico (como se ilustra en la Figura~\ref{fig:ejemplo}).
 Esta patología provoca una pérdida de la contracción auricular efectiva, lo que incrementa
 el riesgo de formación de trombos, accidentes cerebrovasculares (ictus), insuficiencia cardíaca
 y deterioro cognitivo a largo plazo \cite{wikipedia_atrial_2026}.
@@ -43,37 +50,27 @@ y deterioro cognitivo a largo plazo \cite{wikipedia_atrial_2026}.
   \label{fig:ejemplo}
 \end{figure}
 
-Dentro de sus variantes, está la Fibrilación Auricular Paroxística (PAF, por sus siglas en
-inglés, \textit{Paroxysmal Atrial Fibrillation}). Se define por episodios arrítmicos
-que se inician de forma espontánea y que vuelven al ritmo sinusal en un periodo que suele
-ser menor a 7 días, aunque la mayoría lo hacen en menos de 24 horas.
+Dentro de sus varaintes, se encuentra la Fibrilación Auricular Paroxística (PAF, por sus siglas en
+inglés, \textit{Paroxysmal Atrial Fibrillation}). Ésta se caracteriza por episodios esporádicos de arritmia,
+que se inician de manera espontánea y que vuelven al ritmo sinusal en un periodo de unos 7 días, aunque la mayoría lo hacen en menos de 24 horas.
 
-Debido a esta intermitencia, las monitorizaciones ECG de corta duración no suelen lograr
-capturar los episodios, haciendo de especial interés alguna herramienta de predicción temprana.
-
-Por ello la detección temprana, o en concreto, la predicción inminente de estos episodios,
+Debido a esta naturaleza intermitente, los ECGs de corta duración no suelen capturarlos. Por ello, la predicción inminente de estos episodios, 
 es decir, tener la capacidad de predecir si un paciente sufrirá un episodio en los próximos
-minutos a partir de su ritmo sinusal, es un área de investigación de especial interés.
+minutos a partir de su ritmo sinusal, en holters de larga duración es de especial interés.
 
-Predecir un episodio con una ventana de antelación de hasta 5 minutos proporcionaría
-una oportunidad terapéutica crucial, permitiendo alertar al paciente para que cese
+Predecir un episodio con una ventana de antelación de hasta 5 minutos permitiría alertar al paciente para que cese
 actividades de riesgo, automatizar la administración preventiva de fármacos
 antiarrítmicos o preparar dispositivos de estimulación eléctrica cardíaca adaptativa.
 
-Sin embargo, la predicción es una tarea compleja. La fase previa al episodio arrítmico se presenta en ritmo sinusal, por lo que a simple vista en el ECG no se observan patrones o anomalías morfológicas evidentes.
-
-Este trabajo aborda el problema de la predicción inminente
-de PAF mediante redes neuronales.
-Para garantizar la capacidad de generalización de las
-soluciones propuestas, se unifican cinco bases de datos
-heterogéneas, comparando cuatro arquitecturas de redes neuronales.
+Sin embargo, la predicción es una tarea compleja. La fase previa al episodio arrítmico es en ritmo sinusal,
+por lo que a simple vista en el ECG no se observan patrones o anomalías morfológicas evidentes.
 
 \section{Contexto del Trabajo}
 \label{sec:contexto}
 
 Clasicamente este problema solia abordarse mediante la extracción de características de
 variabilidad del ritmo cardíaco (HRV, \textit{Heart Rate Variability}) y por un clasificador lineal. Sin embargo esta
-estrategia no es capaz de analizar las distorsiones morfológicas locales de las señales
+estrategia no suele ser capaz de analizar las distorsiones morfológicas locales de las señales
 de ECG (como cambios finos en la onda P o en el intervalo PR) que preceden a la FA.
 
 Las redes neuronales cambian la forma de abordar este problema, permitiendo extraer información
@@ -90,8 +87,8 @@ como:
   reportando precisiones artificialmente altas.
 \end{enumerate}
 
-Este trabajo se enfoca en resolver estas limitaciones utilizando un dataset consolidado
-procedente de distintas bases de datos, evaluando los modelos mediante una validación cruzada inter-sujeto estricta.
+Este trabajo se enfoca en resolver estas limitaciones utilizando un dataset
+procedente de distintas bases de datos, evaluando los modelos mediante una validación cruzada inter-sujeto.
 
 
 \section{Objetivos del Proyecto}

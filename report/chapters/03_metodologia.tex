@@ -37,14 +37,14 @@ El pipeline de preprocesamiento consta de tres pasos principales:
 \begin{enumerate}
   \item \textbf{Armonización de Canales y Frecuencia de Muestreo:}
   Se unifican todas las señales a exactamente dos canales y una frecuencia de
-  muestreo de $128$~Hz. Si un registro posee menos de dos canales, se realiza un relleno
-  (padding) con ceros; si posee más, se seleccionan únicamente las dos primeras
+  muestreo de $128$~Hz. Si un registro tiene menos de dos canales, se realiza un relleno
+  (padding) con ceros, si tiene más, se seleccionan únicamente las dos primeras
   derivaciones. En nuestro caso todas las bases de datos contienen 2 canales, pero se comprueba
   por generalidad, para tener la posibilidad de añadir posteriormente bases de datos adicionales.
   El remuestreo se ejecuta mediante interpolación trigonométrica.
   \item \textbf{Atenuación del Ruido e Interferencia:}
-  La eliminación del ruido remanente se delega en las primeras capas convolucionales del modelo, que aprenden
-  filtros adaptativos optimizados para la tarea.
+  La tarea de la eliminación del ruido se delega a las primeras capas convolucionales de los moedlos,
+  que aprenderán los filtros necesarios para su correcta eliminación, optimizados para la tarea.
   \item \textbf{Normalización Z-score Local:}
   Para evitar sesgos debido a las variaciones inter-sujeto o inter-dispositivo en la
   amplitud absoluta de las señales, cada segmento se normaliza de forma independiente
@@ -60,17 +60,15 @@ El pipeline de preprocesamiento consta de tres pasos principales:
 \section{Extracción de Ventanas y Prevención de Data Leakage}
 \label{sec:extraccion_ventanas}
 
-El pipeline procesa los registros de manera dinámica para extraer los dos tipos de
-segmentos requeridos para la clasificación binaria:
+Los dos tipos de
+segmentos requeridos para la clasificación binaria son:
 
 \begin{itemize}
   \item \textbf{Clase 1 (Pre-PAF):}
-
-  Esta clase es la que representa el estado anterior a un episodio de fibrilación auricular. 
-  Para su extracción, se ha optado por extraer ventanas de longitud variable, de entre
-  $60$ segundos ($1$ minuto) y $5$ minutos ($300$ segundos), que parten desde el instante de inicio del episodio
-  y retrocede en el tiempo hasta 5 minutos, o hasta encontrarse con el inicio de otro episodio
-  garantizando que el segmento contenga únicamente ritmo sinusal, correspondiente a un solo episodio. 
+  Esta clase representa el estado inmediatamente anterior a un episodio de fibrilación auricular. Se ha optado por extraer
+  ventanas de longitud variable, de entre $60$ ($1$ minuto) y $300$ ($5$ minutos) segundos, que parten desde el inicio del episodio
+  y retroceden en el timepo hasta 5 minutos, o hasta encontrarse con el inicio de otro episodio. De esta manera, se garantiza
+  que el segmento contenga solamente ritmo sinusal.
 
   \item \textbf{Clase 0 (Normal/Control):}
   Se extraen segmentos estables de ritmo sinusal
@@ -171,7 +169,7 @@ de ritmo sinusal de 5 minutos. (Reescalados a $128$~Hz)
 
           \item \textit{Estimación de la PSD (Método de Welch):}
           Se aplica el método de Welch sobre la serie remuestreada a $4\text{ Hz}$
-          utilizando segmentos solapados de $256$ muestras. Esto representa un compromiso entre
+          utilizando segmentos solapados de $256$ muestras. De esta manera se establece un compromiso entre
           resolución en frecuencia y reducción de la varianza del estimador espectral.
           \item \textit{Energía en baja frecuencia} (\texttt{lf}):
           Potencia integrada en el rango $[0.04, 0.15)\text{ Hz}$.
@@ -182,6 +180,11 @@ de ritmo sinusal de 5 minutos. (Reescalados a $128$~Hz)
             \frac{\text{LF}}{\text{HF} + 10^{-8}}
           \end{equation}.
       \end{itemize}
+      El límite inferior de $60$ segundos para la longitud de la ventana se ha establecido para garantizar la estabilidad
+      de las métricas de HRV frecuenciales, en concreto, de la banda de baja frecuencia (LF),
+      que requiere un mínimo de $1/0.04 = 25$ ciclos para una estimación confiable. Una ventana de $60$ segundos asegura al
+      menos $2.4$ ciclos completos de dicha oscilación.
+
   \end{itemize}
 
 

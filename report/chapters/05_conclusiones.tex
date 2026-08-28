@@ -39,8 +39,8 @@ Se ha alcanzado con éxito el propósito principal del trabajo a través de los 
 \begin{itemize}
   \item \textbf{Detección del estado crítico Pre-PAF:} Se ha logrado identificar las variaciones morfológicas
   que llevan a un episodio de fibrilación auricular en la ventana crítica de 5 minutos inmediatamente anterior al episodio, logrando un
-  F1-score del $0.81$ en la clase Pre-PAF mediante la configuración ResNet 1D, o si atendemos a modelos clásicos
-  con un F1-score de $0.87$ con \textit{Random Forest}.
+  F1-score del 0.82 (con un F1 de 0.79 en la clase crítica Pre-PAF y una exactitud del 82\%) mediante la configuración ResNet 1D, o si atendemos a modelos clásicos
+  con un F1-score de $0.82$ con \textit{Random Forest}.
   \item \textbf{Mitigación del Data Leakage:} La separación estricta de conjuntos de datos agrupando
   por paciente garantiza que las métricas de rendimiento reportadas no estén
   sesgadas por memorización de morfologías específicas de un sujeto.
@@ -56,15 +56,16 @@ El estudio presenta limitaciones que deben ser consideradas:
   El aprendizaje profundo requiere volúmenes masivos de datos para obtener los mejores resultados.
   En este proyecto, la cantidad limitada de señales
   explica que arquitecturas muy sofisticadas (como el Transformer o SEResNet) muestren un sobreajuste
-  local y no consigan superar a clasificadores clásicos como el
-  \textit{Random Forest} alimentado con datos HRV precalculados.
-  \item \textbf{Inestabilidad frecuencial de HRV en ventanas cortas:}
-  Para calcular de forma fiable la banda espectral de baja frecuencia (LF, $0.04-0.15\text{ Hz}$),
-  se deberían registrar en la señal al menos dos ciclos de la oscilación más baja ($25\text{ s}$
-  por ciclo), exigiendo registros mínimos de $50$ a $75\text{ s}$.
-  El uso de ventanas cortas (menores a 1 minuto)
-  induce una inestabilidad matemática en los descriptores espectrales debido a la pérdida
-  de resolución frecuencial.
+  local  clasificadores clásicos como el
+  \textit{Random Forest} alimentado con datos HRV precalculados no se queden tan atrás. Además, el número de señales
+  no se corresponde con el número de pacientes, ya que un paciente puede tener mas de una señal, en concreto, contamos 
+  con 4.005 señales de 380 pacientes, que no es diversidad suficientes para captar anomalías morfológicas heterogéneas.
+
+  \item \textbf{Compromiso temporal en la ventana mínima de HRV:}
+  Garantizar un mínimo de 1 minuto ($60\text{ s}$) ha sido indispensable para estabilizar el cálculo espectral de
+  las bandas de baja frecuencia (LF, $0.04\text{--}0.15\text{ Hz}$). Sin embargo, esta
+  restricción impone un compromiso, ya que estamos descartando ventanas válidas que no cumplían con este criterio
+
 \end{itemize}
 
 \section{Líneas futuras}

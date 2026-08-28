@@ -27,8 +27,8 @@ El flujo detallado de la señal a través de la arquitectura y la concatenación
 
 \section{SEResNet 1D}
 La arquitectura SEResNet 1D se basa en la incorporación de módulos \textit{Squeeze-and-Excitation}
-(SE) en los bloques residuales convencionales. Esta adición tiene como objetivo recalibrar adaptativamente
-las respuestas de los canales, modelando explícitamente las interdependencias entre ellos para mejorar
+(SE) en los bloques residuales convencionales. Esta adición recalibra adaptativamente
+las respuestas de los canales, modelando las dependencias entre ellos para mejorar
 el rendimiento de la red.\cite{senet1d}
 
 El módulo SE, detallado en la figura~\ref{fig:squeeze_and_excitation_block}, consta de dos pasos principales:
@@ -67,8 +67,10 @@ El flujo secuencial se ilustra en la figura~\ref{fig:seresnet}.
 \end{figure}
 
 \section{CNN-Transformer Híbrido}
-La arquitectura híbrida utiliza codificadores Transformer para capturar dependencias a largo plazo gracias al mecanismo de autoatención multifiltrada (\textit{Multi-Head Self-Attention}, MHSA).
-Dada una matriz de proyección de consultas ($\mathbf{Q}$), claves ($\mathbf{K}$) y valores ($\mathbf{V}$), la atención de una sola cabeza se define como:
+La arquitectura híbrida utiliza codificadores Transformer para capturar dependencias a largo plazo gracias
+al mecanismo de autoatención (\textit{Multi-Head Self-Attention}, MHSA).
+Dada una matriz de proyección de consultas ($\mathbf{Q}$), claves ($\mathbf{K}$) y valores ($\mathbf{V}$),
+la atención de una sola cabeza se define como:
 \begin{equation}
   \text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\left(\frac{\mathbf{Q} \mathbf{K}^T}{\sqrt{d_k}}\right) \mathbf{V}
 \end{equation}
@@ -80,14 +82,21 @@ El diagrama del codificador híbrido se muestra en la figura~\ref{fig:transforme
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.9\textwidth]{img/transformer.pdf}
-  \caption{Arquitectura híbrida CNN-Transformer. Se utiliza un \textit{frontend} convolucional para la extracción local y reducción de dimensionalidad, seguido de codificadores posicionales y un \textit{Transformer Encoder} para la atención global.}
+  \caption{Arquitectura híbrida CNN-Transformer. Se utiliza un \textit{frontend} convolucional para la extracción
+  local y reducción de dimensionalidad, seguido de codificadores posicionales y un \textit{Transformer Encoder}
+  para la atención global.}
   \label{fig:transformer}
 \end{figure}
 
 \section{Mamba 1D}
-Mamba introduce los modelos de espacio de estados estructurados selectivos (\textit{Selective Structured State Space Models}, S4), los cuales permiten procesar secuencias con una complejidad temporal lineal respecto a la longitud de la entrada, manteniendo a la vez un mecanismo de atención selectivo basado en el contexto. 
+Mamba introduce los modelos de espacio de estados estructurados selectivos
+(\textit{Selective Structured State Space Models}, S4), los cuales permiten procesar secuencias con una
+complejidad temporal lineal respecto a la longitud de la entrada, manteniendo a la vez un mecanismo de atención
+selectivo basado en el contexto. 
 
-En el dominio continuo, estos modelos mapean una señal unidimensional de entrada $x(t) \in \mathbb{R}$ a una representación latente e invisible $h(t) \in \mathbb{R}^N$ mediante una ecuación diferencial lineal de primer orden, para luego proyectarla hacia la salida $y(t) \in \mathbb{R}$:
+En el dominio continuo, estos modelos mapean una señal unidimensional de entrada $x(t) \in \mathbb{R}$ a una
+representación latente $h(t) \in \mathbb{R}^N$ mediante una ecuación diferencial lineal de primer orden,
+para luego proyectarla hacia la salida $y(t) \in \mathbb{R}$:
 \begin{equation}
   h'(t) = \mathbf{A} h(t) + \mathbf{B} x(t), \quad y(t) = \mathbf{C} h(t) + \mathbf{D} x(t)
 \end{equation}
@@ -99,12 +108,14 @@ deescala $\mathbf{\Delta}$, sean funciones directas de la entrada $x_t$. Esto ro
 en el tiempo de los SSM tradicionales y permite al sistema decidir activamente qué información
 propagar o descartar a lo largo de la secuencia de manera dinámica. \cite{gu2024mambalineartimesequencemodeling}
 
-La estructura interna del bloque Mamba y el flujo de los datos a través del módulo de selección se ilustran detalladamente en la figura~\ref{fig:mamba_block}.
+La estructura interna del bloque Mamba y el flujo de los datos a través del módulo de selección
+se ilustran en la figura~\ref{fig:mamba_block}.
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.9\textwidth]{img/mamba1} % Carga tu imagen del bloque interno
-  \caption{Estructura interna del bloque Mamba. Se detalla el mecanismo del modelo de espacio de estados selectivo (SSM), donde los parámetros de discretización y transición se calculan de manera dinámica en función de la secuencia de entrada.}
+  \caption{Estructura interna del bloque Mamba. Se detalla el mecanismo del modelo de espacio de estados selectivo (SSM),
+  donde los parámetros de discretización y transición se calculan de manera dinámica en función de la secuencia de entrada.}
   \label{fig:mamba_block}
 \end{figure}
 
@@ -113,6 +124,8 @@ El flujo secuencial se ilustra en la figura~\ref{fig:mamba}.
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.9\textwidth]{img/mamba.pdf}
-  \caption{Arquitectura híbrida CNN-Mamba. La secuencia latente generada por el \textit{frontend} convolucional es procesada de forma puramente secuencial mediante bloques SSM selectivos, prescindiendo de codificadores posicionales.}
+  \caption{Arquitectura híbrida CNN-Mamba. La secuencia latente generada por el \textit{frontend}
+  convolucional es procesada de forma puramente secuencial mediante bloques SSM selectivos, prescindiendo de
+  codificadores posicionales.}
   \label{fig:mamba}
 \end{figure}

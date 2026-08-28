@@ -39,10 +39,10 @@ def generate_segment_distribution_plot(
         'grid.alpha': 0.7
     })
 
-    fig, ax = plt.subplots(figsize=(8.5, 4.8), dpi=300)
+    fig, ax = plt.subplots(figsize=(8.5, 3.6), dpi=300)
 
     x = np.arange(len(db_labels))
-    width = 0.36
+    width = 0.35
 
     color_c0 = '#2B5B84'  # Deep Steel Blue (Normal / Control)
     color_c1 = '#D9534F'  # Coral Crimson (Pre-PAF)
@@ -58,29 +58,29 @@ def generate_segment_distribution_plot(
             if height > 0:
                 ax.annotate(f'{height:,}',
                             xy=(rect.get_x() + rect.get_width() / 2, height),
-                            xytext=(0, 4),
+                            xytext=(0, 3),
                             textcoords="offset points",
                             ha='center', va='bottom',
-                            fontsize=9.5, fontweight='bold', color=text_color)
+                            fontsize=8.8, fontweight='bold', color=text_color)
 
     autolabel(rects1, '#1A365D')
     autolabel(rects2, '#991B1B')
 
     # Formatting axis and labels
-    ax.set_ylabel('Número de Segmentos Extraídos', fontsize=11, fontweight='bold', labelpad=8)
+    ax.set_ylabel('Nº de Segmentos Extraídos', fontsize=10, fontweight='bold', labelpad=6)
     
     total_c0 = sum(class_0_counts)
     total_c1 = sum(class_1_counts)
     total_all = total_c0 + total_c1
     
     plt.suptitle('Distribución de Segmentos por Base de Datos y Clase (Duración ≥ 1 min)', 
-                 fontsize=12.5, fontweight='bold', color='#111827', y=0.98)
+                 fontsize=11.5, fontweight='bold', color='#111827', y=0.99)
     ax.set_title(f'Total Dataset: {total_all:,} segmentos   |   Clase 0 (Control): {total_c0:,}   |   Clase 1 (Pre-PAF): {total_c1:,}', 
-                 fontsize=9.5, color='#4B5563', pad=10, fontweight='medium')
+                 fontsize=8.8, color='#4B5563', pad=8, fontweight='medium')
 
     ax.set_xticks(x)
-    ax.set_xticklabels(db_labels, fontsize=10.5, fontweight='semibold', color='#374151')
-    ax.tick_params(axis='y', labelsize=10, colors='#4B5563')
+    ax.set_xticklabels(db_labels, fontsize=9.8, fontweight='semibold', color='#374151')
+    ax.tick_params(axis='y', labelsize=9, colors='#4B5563')
     
     max_val = max(max(class_0_counts), max(class_1_counts))
     ax.set_ylim(0, max_val * 1.18)
@@ -93,8 +93,8 @@ def generate_segment_distribution_plot(
     ax.spines['bottom'].set_color('#D1D5DB')
 
     # Legend placement
-    legend = ax.legend(frameon=True, framealpha=0.95, edgecolor='#E5E7EB', fontsize=9.5, loc='upper right')
-    legend.get_frame().set_boxstyle('round,pad=0.4')
+    legend = ax.legend(frameon=True, framealpha=0.95, edgecolor='#E5E7EB', fontsize=8.8, loc='upper right')
+    legend.get_frame().set_boxstyle('round,pad=0.35')
 
     plt.tight_layout()
 
